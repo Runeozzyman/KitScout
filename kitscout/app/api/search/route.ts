@@ -2,7 +2,7 @@ import { scrapeFuwa } from "@/lib/scrapers/sites/fuwa";
 import { scrapePanda } from "@/lib/scrapers/sites/panda";
 import { scrapeSearch } from "@/lib/scrapers/sites/searchScrape";
 
-const testQuery = `Gundam Epyon`;
+const testQuery = `Wing Zero`;
 
 export async function GET() {
   try {

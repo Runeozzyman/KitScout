@@ -1,15 +1,12 @@
 import axios from "axios";
-import * as cheerio from "cheerio";
+//import * as cheerio from "cheerio";
 import { KitResult } from "@/types/kit";
 
-//THIS IS A GENERAL SCRAPER, REFACTOR TO SEARCH FOR A SPECIFIC KIT / SEARCH QUERY
-
-const url = "https://fuwafuwaland.ca";
-
 //note: fn. returns a promise that resolves to KitResult object
-export async function scrapeFuwa(): Promise<KitResult[]>{
+export async function scrapeFuwa(query: string): Promise<KitResult[]>{
 
-    const url = "https://fuwafuwaland.ca";
+    //this is the JSON endpoint
+    const url = `https://fuwafuwaland.ca/search/suggest.json?q=${encodeURIComponent(query)}`;
 
     const {data} = await axios.get(url, {
         headers:{
@@ -17,29 +14,20 @@ export async function scrapeFuwa(): Promise<KitResult[]>{
         }, timeout: 10000,
     });
 
-    const $ = cheerio.load(data)
     const results: KitResult[] = []; 
+    const products = data?.resources?.results?.products ?? [];
 
-    $(".card, .product-card, .grid-item").each((_, el) => {
+    for (const p of products) {
+        const name = p.title;
+        const price = parseFloat(p.price_max ?? p.price);
+        const link = p.url.startsWith("http") ? p.url : `https://fuwafuwaland.ca${p.url}`;
+        const source = "Fuwa Fuwa Land";
 
-    const name = $(el).find("h3").first().text().trim();
-    const priceText = $(el).find(":contains('$')").first().text().trim();
-    const priceMatch = priceText.match(/\d+\.\d{2}/);
-    const price = priceMatch ? parseFloat(priceMatch[0]) : null;
-    const link = $(el).find("a").attr("href");
+        if (!name || !link || isNaN(price)) continue;
 
-    if (!name || !price || !link) return;
+        results.push({ name, price, link, source });
+    }
 
-    results.push({
-        name,
-        price,
-        link: link.startsWith("http")
-        ? link
-        : `https://fuwafuwaland.ca${link}`,
-        source: "FuwaFuwa",
-        });
-    });
-    
     const uniqueResults = Array.from(
         new Map(results.map(item => [item.link, item])).values()
     );
