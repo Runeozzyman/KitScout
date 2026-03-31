@@ -1,16 +1,10 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { KitResult } from "@/types/kit";
+
+//THIS IS A GENERAL SCRAPER, REFACTOR TO SEARCH FOR A SPECIFIC KIT / SEARCH QUERY
 
 const url = "https://fuwafuwaland.ca";
-
-//note: this defines the shape of object returned by result
-export interface KitResult {
-    name: string;
-    price: number;
-    link: string;
-    image?: string;
-    source: string;
-}
 
 //note: fn. returns a promise that resolves to KitResult object
 export async function scrapeFuwa(): Promise<KitResult[]>{
@@ -24,7 +18,7 @@ export async function scrapeFuwa(): Promise<KitResult[]>{
     });
 
     const $ = cheerio.load(data)
-    const results: KitResult[] = []; //explain
+    const results: KitResult[] = []; 
 
     $(".card, .product-card, .grid-item").each((_, el) => {
 
