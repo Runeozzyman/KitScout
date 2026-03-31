@@ -1,0 +1,3 @@
+LAST:  Implemented kit search using JSON exposed JSON endpoints from two sites, combined into one search function
+
+TODO: Create a few more site specific scrapers, implement Redis cache to check for data before executing search
