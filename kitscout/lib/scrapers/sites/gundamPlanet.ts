@@ -3,10 +3,10 @@ import axios from "axios";
 import { KitResult } from "@/types/kit";
 
 //note: fn. returns a promise that resolves to KitResult object
-export async function scrapeFuwa(query: string): Promise<KitResult[]>{
+export async function scrapePlanet(query: string): Promise<KitResult[]>{
 
     //this is the JSON endpoint
-    const url = `https://fuwafuwaland.ca/search/suggest.json?q=${encodeURIComponent(query)}`;
+    const url = `https://www.gundamplanet.com/search/suggest.json?q=${encodeURIComponent(query)}`;
 
     const {data} = await axios.get(url, {
         headers:{
@@ -20,9 +20,9 @@ export async function scrapeFuwa(query: string): Promise<KitResult[]>{
     for (const p of products) {
         const name = p.title;
         const price = parseFloat(p.price_max ?? p.price);
-        const currency = "CAD";
-        const link = p.url.startsWith("http") ? p.url : `https://fuwafuwaland.ca${p.url}`;
-        const source = "Fuwa Fuwa Land";
+        const currency = "USD";
+        const link = p.url.startsWith("http") ? p.url : `https://www.gundamplanet.com${p.url}`;
+        const source = "Gundam Planet";
 
         if (!name || !link || isNaN(price)) continue;
 
