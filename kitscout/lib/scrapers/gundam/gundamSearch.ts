@@ -13,7 +13,7 @@ function normalizeQuery(query: string){
      .replace(/\s+/g, " ");
 }
 
-export async function scrapeSearch(
+export async function gundamSearch(
   query: string
 ): Promise<(KitResult & { priceCAD: number })[]> {
 

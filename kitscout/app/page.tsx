@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Home() {
 
   const [query, setQuery] = useState("");
-  const [type, setType] = useState("");
+  const [type, setType] = useState("Gundams");
 
   const router = useRouter();
 

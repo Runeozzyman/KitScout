@@ -6,12 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 export default function Search() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
+  const type = searchParams.get("type")
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["search", query],
     queryFn: async () => {
       console.log("Fetching from API: ", query);
-      const res = await fetch(`/api/search?q=${query}`);
+      const res = await fetch(`/api/search?q=${query}&type=${type}`);
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },

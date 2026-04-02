@@ -1,12 +1,14 @@
 import { scrapeFuwa } from "@/lib/scrapers/gundam/fuwa";
 import { scrapePanda } from "@/lib/scrapers/gundam/panda";
-import { scrapeSearch } from "@/lib/scrapers/gundam/gundamSearch";
+import { gundamSearch } from "@/lib/scrapers/gundam/gundamSearch";
+import { scrapeModels } from "@/lib/scrapers/models/modelSearch";
 import { useSearchParams } from "react-router-dom";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
     const query = req.nextUrl.searchParams.get("q");
+    const type = req.nextUrl.searchParams.get("type");
     
 
     if (!query) {
@@ -16,7 +18,19 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const results = await scrapeSearch(query);
+    let results;
+
+    if(type==="Gundams"){
+      results = await gundamSearch(query);
+    }
+    else if(type==="Models"){
+      results = await scrapeModels(query);
+    }
+    else{
+      //Warhammer scraper
+      return;
+    }
+    
 
     return Response.json(results);
 
