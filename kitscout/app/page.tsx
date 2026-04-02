@@ -6,20 +6,33 @@ import { useRouter } from "next/navigation";
 export default function Home() {
 
   const [query, setQuery] = useState("");
+  const [type, setType] = useState("");
+
   const router = useRouter();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
 
-      <h1 className="text-3xl font-bold mb-4">KitScout</h1>
+      <h1 className="text-4xl font-bold mb-4">KitScout</h1>
 
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          router.push(`/search?q=${query}`);
+          router.push(`/search?q=${encodeURIComponent(query)}&type=${type}`);
         }}
-        className="flex gap-2"
+        className="flex flex-row gap-2"
       >
+
+      <select
+        value={type}
+        onChange={(e) => setType(e.target.value)}
+        className="border border-gray-400 rounded-lg p-2"
+      >
+        <option value="Gundams">Gundams</option>
+        <option value="Models">Models</option>
+        <option value="Warhammer">Warhammer</option>
+      </select>
+
       <input
         className="border border-gray-400 rounded-lg p-2 text-center"
         id="kit-search-bar"
@@ -34,7 +47,7 @@ export default function Home() {
         className="bg-blue-500 text-white px-4 py-2 rounded-lg"
       >
         Search
-      </button>
+      </button> 
 
       </form>
 

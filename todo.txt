@@ -1,3 +1,3 @@
-LAST: Implemented Redis cache, basic frontend WIP
+LAST: Implemented TanStack Query cache, added type selector for using different scrapers
 
-TODO: Wrap pages in TanStack Query Provider, display scraped data on search page, lastly begin REVISING
+TODO: begin REVISING, dynamic scraping based on selected type
