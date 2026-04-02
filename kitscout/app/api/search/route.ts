@@ -1,17 +1,25 @@
 import { scrapeFuwa } from "@/lib/scrapers/sites/fuwa";
 import { scrapePanda } from "@/lib/scrapers/sites/panda";
 import { scrapeSearch } from "@/lib/scrapers/sites/searchScrape";
+import { useSearchParams } from "react-router-dom";
+import { NextRequest } from "next/server";
 
-const testQuery = `MG Wing Zero`; //change for testing
+export async function GET(req: NextRequest) {
+  try {
+    const query = req.nextUrl.searchParams.get("q");
 
-export async function GET() {
-  try { 
+    if (!query) {
+      return Response.json(
+        { error: "Missing query" },
+        { status: 400 }
+      );
+    }
 
-    const results = await scrapeSearch(testQuery);
-    return Response.json({ results });
+    const results = await scrapeSearch(query);
+
+    return Response.json(results);
 
   } catch (error) {
-    
     console.error(error);
 
     return Response.json(

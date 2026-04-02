@@ -1,5 +1,5 @@
 import axios from "axios";
-import { redis } from "@/redis/redis";
+import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { scrapeFuwa } from "./fuwa";
 import { scrapePanda } from "./panda";
@@ -22,11 +22,11 @@ export async function scrapeSearch(
   const cached = await redis.get(cacheKey);
 
   if (cached) {
-    console.log("CACHE HIT");
+    console.log("REDIS CACHE HIT: ", query);
     return JSON.parse(cached);
   }
 
-  console.log("CACHE MISS");
+  console.log("REDIS CACHE MISS: ",query);
 
   const results = await Promise.allSettled([
     scrapeFuwa(query),

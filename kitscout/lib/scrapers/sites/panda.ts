@@ -21,11 +21,12 @@ export async function scrapePanda(query: string): Promise<KitResult[]> {
         const price = parseFloat(p.price_max ?? p.price);
         const currency = "CAD";
         const link = p.url.startsWith("http") ? p.url : `https://pandahobby.ca${p.url}`;
+        const image = p.image || p.featured_image?.url;
         const source = "Panda Hobby";
 
         if (!name || !link || isNaN(price)) continue;
 
-        results.push({ name, price, currency, link, source });
+        results.push({ name, price, currency, link, image, source });
     }
 
     const uniqueResults = Array.from(

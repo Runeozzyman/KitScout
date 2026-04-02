@@ -22,11 +22,12 @@ export async function scrapePlanet(query: string): Promise<KitResult[]>{
         const price = parseFloat(p.price_max ?? p.price);
         const currency = "USD";
         const link = p.url.startsWith("http") ? p.url : `https://www.gundamplanet.com${p.url}`;
+        const image = p.image || p.featured_image?.url;
         const source = "Gundam Planet";
 
         if (!name || !link || isNaN(price)) continue;
 
-        results.push({ name, price, currency, link, source });
+        results.push({ name, price, currency, link, image, source });
     }
 
     const uniqueResults = Array.from(
