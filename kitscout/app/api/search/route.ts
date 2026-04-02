@@ -7,10 +7,10 @@ import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
+    
     const query = req.nextUrl.searchParams.get("q");
     const type = req.nextUrl.searchParams.get("type");
     
-
     if (!query) {
       return Response.json(
         { error: "Missing query" },
