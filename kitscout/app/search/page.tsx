@@ -58,7 +58,7 @@ export default function Search() {
                 </a>
 
                 <div className="font-medium whitespace-nowrap">
-                ${item.price.toFixed(2)} CAD
+                ${item.priceCAD.toFixed(2)} CAD
                 </div>
             </div>
 

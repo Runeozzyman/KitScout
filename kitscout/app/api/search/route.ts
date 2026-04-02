@@ -1,6 +1,6 @@
-import { scrapeFuwa } from "@/lib/scrapers/sites/fuwa";
-import { scrapePanda } from "@/lib/scrapers/sites/panda";
-import { scrapeSearch } from "@/lib/scrapers/sites/searchScrape";
+import { scrapeFuwa } from "@/lib/scrapers/gundam/fuwa";
+import { scrapePanda } from "@/lib/scrapers/gundam/panda";
+import { scrapeSearch } from "@/lib/scrapers/gundam/searchScrape";
 import { useSearchParams } from "react-router-dom";
 import { NextRequest } from "next/server";
 
