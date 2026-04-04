@@ -10,13 +10,27 @@ export default function Search() {
 
   const query = searchParams.get("q") || "";
   const type = searchParams.get("type") || "Gundams";
+  const min = searchParams.get("min") || "";
+  const max = searchParams.get("max") || "";
+  const sort = searchParams.get("sort") || "";
 
   const [searchInput, setSearchInput] = useState(query);
+  const [minPrice, setMinPrice] = useState(min);
+  const [maxPrice, setMaxPrice] = useState(max);
+  const [sortState, setSortState] = useState(sort);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["search", query, type],
+    queryKey: ["search", query, type, min, max, sort],
     queryFn: async () => {
-      const res = await fetch(`/api/search?q=${query}&type=${type}`);
+      const params = new URLSearchParams({
+        q: query,
+        type,
+        ...(min && { min }),
+        ...(max && { max }),
+        ...(sort && { sort }),
+      });
+
+      const res = await fetch(`/api/search?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
     },
@@ -27,26 +41,75 @@ export default function Search() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="w-full border-b bg-white sticky top-0 z-50">
+      <div className="w-full border-b bg-white sticky top-0 z-50 shadow-sm">
+        <div className="max-w-5xl mx-auto flex items-center justify-center p-6">
+          <button
+            onClick={() => router.push("/")}
+            className="text-lg sm:text-xl font-bold tracking-tight hover:cursor-pointer"
+          >
+            KitScout
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full border-b bg-gray-50">
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            router.push(
-              `/search?q=${encodeURIComponent(searchInput)}&type=${type}`
-            );
+
+            const params = new URLSearchParams({
+              q: searchInput,
+              type,
+              ...(minPrice && { min: minPrice }),
+              ...(maxPrice && { max: maxPrice }),
+              ...(sortState && { sort: sortState }),
+            });
+
+            router.push(`/search?${params.toString()}`);
           }}
-          className="max-w-5xl mx-auto flex flex-col sm:flex-row gap-2 p-3"
+          className="max-w-5xl mx-auto flex flex-col gap-2 p-4"
         >
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search for a kit..."
-            className="border border-gray-300 rounded-lg p-2 w-full sm:flex-1"
-          />
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full sm:w-auto">
-            Search
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search for a kit..."
+              className="border border-gray-300 rounded-lg p-2 w-full sm:flex-1 bg-white"
+            />
+
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full sm:w-auto">
+              Search
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="number"
+              placeholder="Min $"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+            />
+
+            <input
+              type="number"
+              placeholder="Max $"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+            />
+
+            <select
+              value={sortState}
+              onChange={(e) => setSortState(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+            >
+              <option value="">Sort</option>
+              <option value="asc">Price ↑</option>
+              <option value="desc">Price ↓</option>
+            </select>
+          </div>
         </form>
       </div>
 

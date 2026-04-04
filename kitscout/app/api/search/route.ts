@@ -7,10 +7,16 @@ import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    
     const query = req.nextUrl.searchParams.get("q");
     const type = req.nextUrl.searchParams.get("type");
-    
+
+    const minParam = req.nextUrl.searchParams.get("min");
+    const maxParam = req.nextUrl.searchParams.get("max");
+    const sort = req.nextUrl.searchParams.get("sort") || undefined;
+
+    const min = minParam ? Number(minParam) : undefined;
+    const max = maxParam ? Number(maxParam) : undefined;
+
     if (!query) {
       return Response.json(
         { error: "Missing query" },
@@ -20,17 +26,16 @@ export async function GET(req: NextRequest) {
 
     let results;
 
-    if(type==="Gundams"){
-      results = await gundamSearch(query);
-    }
-    else if(type==="Models"){
+    if (type === "Gundams") {
+      results = await gundamSearch(query, min, max, sort);
+    } else if (type === "Models") {
       results = await scrapeModels(query);
+    } else {
+      return Response.json(
+        { error: "Unsupported type" },
+        { status: 400 }
+      );
     }
-    else{
-      //Warhammer scraper
-      return;
-    }
-    
 
     return Response.json(results);
 
