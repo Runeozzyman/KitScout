@@ -1,5 +1,5 @@
-import { scrapeHobby } from "./hobbysense";
-import { scrapeSunward } from "./sunward";
+import { scrapeTorchlight } from "./torchlight";
+import { scrapeBRG } from "./battleReadyGames";
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { getRate } from "@/utils/currency";
@@ -11,7 +11,7 @@ function normalizeQuery(query: string) {
     .replace(/\s+/g, " ");
 }
 
-export async function scrapeModels(
+export async function scrapeWarhammer(
   query: string,
   min?: number,
   max?: number,
@@ -30,8 +30,8 @@ export async function scrapeModels(
   console.log("REDIS CACHE MISS: ", query);
 
   const results = await Promise.allSettled([
-    scrapeHobby(query),
-    scrapeSunward(query),
+    scrapeTorchlight(query),
+    scrapeBRG(query)
   ]);
 
   const merged = results

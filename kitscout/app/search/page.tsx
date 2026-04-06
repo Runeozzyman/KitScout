@@ -137,7 +137,7 @@ export default function Search() {
                 className="w-20 h-20 object-contain bg-white rounded p-1 flex-shrink-0"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src =
-                    "/placeholder.png";
+                    "/placeholder.jpg";
                 }}
               />
 

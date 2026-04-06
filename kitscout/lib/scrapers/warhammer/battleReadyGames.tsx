@@ -2,10 +2,10 @@ import axios from "axios";
 import { KitResult } from "@/types/kit";
 
 //note: fn. returns a promise that resolves to KitResult object
-export async function scrapeTorchlight(query: string): Promise<KitResult[]>{
+export async function scrapeBRG(query: string): Promise<KitResult[]>{
 
     //this is the JSON endpoint
-    const url = `https://torchlightgh.com/search/suggest.json?q=${encodeURIComponent(query)}`;
+    const url = `https://battlereadygames.ca/search/suggest.json?q=${encodeURIComponent(query)}&resources[type]=product`;
 
     const {data} = await axios.get(url, {
         headers:{
@@ -20,13 +20,14 @@ export async function scrapeTorchlight(query: string): Promise<KitResult[]>{
         const name = p.title;
         const price = parseFloat(p.price_max ?? p.price);
         const currency = "CAD";
-        const link = p.url.startsWith("http") ? p.url : `https://torchlightgh.com${p.url}`;
+        const link = p.url.startsWith("http") ? p.url : `https://battlereadygames.ca${p.url}`;
         const image = p.image || p.featured_image?.url;
-        const source = "Torchlight Games and Hobbies";
+        const source = "Battle Ready Games";
 
         if (!name || !link || isNaN(price)) continue;
 
         results.push({ name, price, currency, link, image,source });
+        
     }
 
     const uniqueResults = Array.from(

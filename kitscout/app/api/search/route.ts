@@ -1,8 +1,7 @@
-import { scrapeFuwa } from "@/lib/scrapers/gundam/fuwa";
-import { scrapePanda } from "@/lib/scrapers/gundam/panda";
 import { gundamSearch } from "@/lib/scrapers/gundam/gundamSearch";
 import { scrapeModels } from "@/lib/scrapers/models/modelSearch";
-import { useSearchParams } from "react-router-dom";
+import { scrapeWarhammer } from "@/lib/scrapers/warhammer/warhammerSearch";
+
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -31,10 +30,7 @@ export async function GET(req: NextRequest) {
     } else if (type === "Models") {
       results = await scrapeModels(query);
     } else {
-      return Response.json(
-        { error: "Unsupported type" },
-        { status: 400 }
-      );
+      results = await scrapeWarhammer(query, min, max, sort)
     }
 
     return Response.json(results);
