@@ -1,3 +1,3 @@
-LAST: Implemented TanStack Query cache, added type selector for using different scrapers
+LAST: Implemented Warhammer scrapers and added placeholder jpg for images
 
 TODO: begin REVISING, dynamic scraping based on selected type
