@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import SkeletonResult from "../../components/skeletonResults";
 
 export default function Search() {
   const searchParams = useSearchParams();
@@ -118,7 +119,13 @@ export default function Search() {
           Results for: {query}
         </h1>
 
-        {isLoading && <div>Loading...</div>}
+        {isLoading && (
+          <div className="w-full max-w-5xl grid gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonResult key={i} />
+            ))}
+          </div>
+        )}
         {error && <div>Something went wrong</div>}
 
         <div className="w-full max-w-5xl grid gap-4">
