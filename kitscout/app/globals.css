@@ -4,10 +4,11 @@ body {
   @apply text-black;
 }
 
+
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -18,6 +19,7 @@ body {
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
+
 
 @keyframes slide-in {
   from {

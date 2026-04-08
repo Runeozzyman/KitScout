@@ -1,3 +1,3 @@
-LAST: Refactored all code into components, added additional type security and declarations, added header logo
+LAST: Edited visual design -> Added homepage description + animation, small changes to colors in search bar + on-focus
 
 TODO: add logo on home page, probably remove background image or at least change it, do more aesthetic design
