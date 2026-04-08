@@ -1,3 +1,3 @@
-LAST: Implemented Warhammer scrapers and added placeholder jpg for images
+LAST: Refactored all code into components, added additional type security and declarations, added header logo
 
-TODO: begin REVISING and fixing CSS
+TODO: add logo on home page, probably remove background image or at least change it, do more aesthetic design
