@@ -4,6 +4,9 @@ import SearchBar from "@/components/search";
 
 export default function Home() {
   return (
+
+  <div className="relative min-h-screen">
+
   <div
     className="
       hidden md:block
@@ -15,8 +18,13 @@ export default function Home() {
     "
     style={{ backgroundImage: "url('/bg2.png')" }}
   >
-    <SearchBar/>
   </div>
+
+    <SearchBar />
+    
+  </div>
+
+  
 
   );
 }
