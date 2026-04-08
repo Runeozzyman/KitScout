@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import SkeletonResult from "../../components/skeletonResults";
+import Header from "../../components/header";
 
 export default function Search() {
   const searchParams = useSearchParams();
@@ -42,16 +43,7 @@ export default function Search() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="w-full border-b bg-white sticky top-0 z-50 shadow-sm">
-        <div className="max-w-5xl mx-auto flex items-center justify-center p-6">
-          <button
-            onClick={() => router.push("/")}
-            className="text-lg sm:text-xl font-bold tracking-tight hover:cursor-pointer"
-          >
-            KitScout
-          </button>
-        </div>
-      </div>
+      <Header />
 
       <div className="w-full border-b bg-gray-50">
         <form
