@@ -13,7 +13,10 @@ export default function SearchBar() {
   return (
 <div className="flex flex-col items-center justify-center min-h-screen relative">
   
-  <h1 className="text-4xl font-bold mb-4">KitScout</h1>
+  <img 
+      src="/logo.svg" 
+      className="h-25"  
+  />
 
   <form
     onSubmit={(e) => {
