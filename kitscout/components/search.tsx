@@ -15,20 +15,28 @@ export default function SearchBar() {
   
   <img 
       src="/logo.svg" 
-      className="h-25"  
+      className="h-30 mb-3"
   />
+  
+  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-800 mb-2 animate-slide-in">
+    Find the best price on your next kit.
+  </h1>
+
+  <p className="text-gray-500 mb-10 max-w-md animate-slide-in">
+    Compare prices across multiple stores instantly.
+  </p>
 
   <form
     onSubmit={(e) => {
       e.preventDefault();
       router.push(`/search?q=${encodeURIComponent(query)}&type=${type}`);
     }}
-    className="flex flex-col sm:flex-row gap-2 w-full max-w-md"
+    className="flex flex-col sm:flex-row gap-2 w-full max-w-md animate-slide-in"
   >
     <select
       value={type}
       onChange={(e) => setType(e.target.value)}
-      className="border border-gray-400 rounded-lg p-2 bg-white w-full sm:w-auto"
+      className="border border-gray-400 rounded-lg p-2 bg-white w-full sm:w-auto focus:outline-none focus:ring-2 focus: ring-blue-400"
     >
       <option value="Gundams">Gundams</option>
       <option value="Models">Models</option>
@@ -36,7 +44,7 @@ export default function SearchBar() {
     </select>
 
     <input
-      className="border border-gray-400 rounded-lg p-2 text-center bg-white w-full"
+      className="border border-gray-300 rounded-lg p-2 text-center bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
       id="kit-search-bar"
       type="text"
       placeholder="Search for a kit here!"
@@ -46,7 +54,7 @@ export default function SearchBar() {
 
     <button
       type="submit"
-      className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full sm:w-auto"
+      className="bg-blue-500 hover:bg-blue-600 transition text-white px-4 py-2 rounded-lg w-full sm:w-auto"
     >
       Search
     </button>
