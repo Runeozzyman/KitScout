@@ -11,9 +11,8 @@ export default function SearchBar() {
   const router = useRouter();
 
   return (
-  <div className="flex flex-col items-center justify-center min-h-screen relative">
+<div className="flex flex-col items-center justify-center min-h-screen relative">
   
-
   <h1 className="text-4xl font-bold mb-4">KitScout</h1>
 
   <form
