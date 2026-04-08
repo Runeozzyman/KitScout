@@ -2,6 +2,7 @@ import { scrapeTorchlight } from "./torchlight";
 import { scrapeBRG } from "./battleReadyGames";
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
+import { KitResultWithCAD } from "@/types/kitWithCAD";
 import { getRate } from "@/utils/currency";
 
 function normalizeQuery(query: string) {
@@ -16,7 +17,7 @@ export async function scrapeWarhammer(
   min?: number,
   max?: number,
   sort?: string
-): Promise<(KitResult & { priceCAD: number })[]> {
+): Promise<(KitResultWithCAD)[]> {
 
   const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}`;
 
@@ -24,7 +25,7 @@ export async function scrapeWarhammer(
 
   if (cached) {
     console.log("REDIS CACHE HIT: ", query);
-    return JSON.parse(cached);
+    return JSON.parse(cached) as KitResultWithCAD[];
   }
 
   console.log("REDIS CACHE MISS: ", query);
@@ -46,7 +47,7 @@ export async function scrapeWarhammer(
 
   const rates = Object.fromEntries(rateEntries) as Record<string, number>;
 
-  const normalized = merged.map((item) => ({
+  const normalized: KitResultWithCAD[] = merged.map((item) => ({
     ...item,
     priceCAD: Number(
       (item.price * (rates[item.currency] ?? 1)).toFixed(2)
