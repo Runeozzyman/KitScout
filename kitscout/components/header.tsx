@@ -12,7 +12,11 @@ return(
                 onClick={() => router.push("/")}
                 className="text-lg sm:text-xl font-bold tracking-tight hover:cursor-pointer"
             >
-            KitScout
+            
+            <img 
+                src="/logo.svg" 
+                className="h-15 drop-shadow-sm rounded"  
+            />
             </button>
         </div>
     </div>  
