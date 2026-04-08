@@ -1,6 +1,7 @@
 import axios from "axios";
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
+import { KitResultWithCAD } from "@/types/kitWithCAD";
 import { scrapeFuwa } from "./fuwa";
 import { scrapePanda } from "./panda";
 import { scrapePlanet } from "./gundamPlanet";
@@ -18,7 +19,7 @@ export async function gundamSearch(
   min?: number,
   max?: number,
   sort?: string
-): Promise<(KitResult & { priceCAD: number })[]> {
+): Promise<(KitResultWithCAD)[]> {
 
   const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}`;
 
@@ -26,7 +27,7 @@ export async function gundamSearch(
 
   if (cached) {
     console.log("REDIS CACHE HIT: ", query);
-    return JSON.parse(cached);
+    return JSON.parse(cached) as KitResultWithCAD[];
   }
 
   console.log("REDIS CACHE MISS: ", query);
@@ -49,7 +50,7 @@ export async function gundamSearch(
 
   const rates = Object.fromEntries(rateEntries) as Record<string, number>;
 
-  const normalized = merged.map((item) => ({
+  const normalized: KitResultWithCAD[] = merged.map((item) => ({
     ...item,
     priceCAD: Number(
       (item.price * (rates[item.currency] ?? 1)).toFixed(2)
