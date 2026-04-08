@@ -6,7 +6,7 @@ export default function Header(){
 
 return(
 
-    <div className="w-full border-b bg-white sticky top-0 z-50 shadow-sm">
+    <div className="w-full  bg-white sticky top-0 z-50 shadow-sm">
         <div className="max-w-5xl mx-auto flex items-center justify-center p-6">
             <button
                 onClick={() => router.push("/")}
@@ -15,7 +15,7 @@ return(
             
             <img 
                 src="/logo.svg" 
-                className="h-15 drop-shadow-sm rounded"  
+                className="h-15"  
             />
             </button>
         </div>
