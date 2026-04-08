@@ -1,0 +1,16 @@
+export default function HomeBackground(){
+
+return(
+<div
+    className="
+      hidden md:block
+      absolute inset-0 
+      bg-contain md:bg-[length:50%] lg:bg-[length:40%]
+      bg-no-repeat 
+      bg-[position:10%_center]
+      -z-10
+    "
+    style={{ backgroundImage: "url('/bg2.png')" }}
+  >
+  </div>
+)};
