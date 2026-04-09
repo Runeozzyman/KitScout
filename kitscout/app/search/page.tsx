@@ -9,6 +9,7 @@ import Header from "../../components/header";
 import SearchFilter from "@/components/filters";
 import ResultCard from "@/components/resultCard";
 import ResultList from "@/components/resultList";
+import FindNearbyStores from "@/components/nearbyStores";
 
 export default function Search() {
 
@@ -83,6 +84,9 @@ export default function Search() {
           <div className="mt-4 animate-fade-in">No results found</div>
         )}
       </div>
+
+        <FindNearbyStores />
+
     </div>
   );
 }

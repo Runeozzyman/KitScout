@@ -11,18 +11,18 @@ export default function SearchBar() {
   const router = useRouter();
 
   return (
-<div className="flex flex-col items-center justify-center min-h-screen relative">
+<div className="flex flex-col items-center justify-center min-h-screen relative animate-slide-in">
   
   <img 
       src="/logo.svg" 
       className="h-30 mb-3"
   />
   
-  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-800 mb-2 animate-slide-in">
+  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-800 mb-2 ">
     Find the best price on your next kit.
   </h1>
 
-  <p className="text-gray-500 mb-10 max-w-md animate-slide-in">
+  <p className="text-gray-500 mb-10 max-w-md ">
     Compare prices across multiple stores instantly.
   </p>
 
@@ -31,7 +31,7 @@ export default function SearchBar() {
       e.preventDefault();
       router.push(`/search?q=${encodeURIComponent(query)}&type=${type}`);
     }}
-    className="flex flex-col sm:flex-row gap-2 w-full max-w-md animate-slide-in"
+    className="flex flex-col sm:flex-row gap-2 w-full max-w-md"
   >
     <select
       value={type}

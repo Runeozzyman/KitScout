@@ -3,6 +3,7 @@
 import SearchBar from "@/components/search";
 import HomeBackground from "@/components/background";
 import Header from "@/components/header";
+import FindNearbyStores from "@/components/nearbyStores";
 
 export default function Home() {
   return (

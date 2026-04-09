@@ -73,8 +73,8 @@ return(
               className="border border-gray-300 rounded-lg p-2 w-full bg-white"
             >
               <option value="">Sort</option>
-              <option value="asc">Price ↑</option>
-              <option value="desc">Price ↓</option>
+              <option value="asc">Price Asc.</option>
+              <option value="desc">Price Desc.</option>
             </select>
           </div>
         </form>
