@@ -31,7 +31,7 @@ export default function SearchBar() {
       e.preventDefault();
       router.push(`/search?q=${encodeURIComponent(query)}&type=${type}`);
     }}
-    className="flex flex-col sm:flex-row gap-2 w-full max-w-md"
+    className="flex flex-col sm:flex-row gap-2 w-full max-w-md animate-slide-in"
   >
     <select
       value={type}
@@ -49,6 +49,7 @@ export default function SearchBar() {
       type="text"
       placeholder="Search for a kit here!"
       value={query}
+      required
       onChange={(e) => setQuery(e.target.value)}
     />
 

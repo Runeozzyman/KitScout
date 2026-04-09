@@ -45,7 +45,7 @@ export default function FindNearbyStores() {
 
       <button
         onClick={handleGetLocation}
-        className="bg-blue-400 hover:bg-blue-500 transition text-white px-4 py-2 rounded-lg mb-4"
+        className="bg-blue-500 hover:bg-blue-400 transition text-white px-4 py-2 rounded-lg mb-4"
         disabled={loading}
       >
         Find Nearby Stores
