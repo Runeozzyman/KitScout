@@ -38,7 +38,7 @@ export default function SearchBar() {
       onChange={(e) => setType(e.target.value)}
       className="border border-gray-400 rounded-lg p-2 bg-white w-full sm:w-auto focus:outline-none focus:ring-2 focus: ring-blue-400"
     >
-      <option value="Gundams">Gundams</option>
+      <option value="Gundams">Gunpla</option>
       <option value="Models">Models</option>
       <option value="Warhammer">Warhammer</option>
     </select>

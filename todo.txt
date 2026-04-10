@@ -2,4 +2,4 @@ LAST: Edited visual design -> Added homepage description + animation,
       small changes to colors in search bar + on-focus,
       added "find nearby stores" feature
 
-TODO: add logo on home page, probably remove background image or at least change it, do more aesthetic design
+TODO: add supabase client and create account features

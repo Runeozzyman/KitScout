@@ -4,7 +4,6 @@ body {
   @apply text-black;
 }
 
-
 @keyframes fade-in {
   from {
     opacity: 0;

@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     let results;
 
-    if (type === "Gundams") {
+    if (type === "Gunpla") {
       results = await gundamSearch(query, min, max, sort);
     } else if (type === "Models") {
       results = await scrapeModels(query);

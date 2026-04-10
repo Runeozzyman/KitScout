@@ -74,6 +74,7 @@ export default function Search() {
             ))}
           </div>
         )}
+        
         {error && <div>Something went wrong</div>}
 
         {data && data.length > 0 && (
