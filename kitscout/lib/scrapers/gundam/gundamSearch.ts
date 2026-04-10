@@ -37,9 +37,7 @@ export async function gundamSearch(
 
   const results = await Promise.allSettled([
     scrapeFuwa(query),
-    scrapePanda(query),
-    scrapePlanet(query),
-    scrapeTorchlight(query),
+    
   ]);
 
   const merged = results

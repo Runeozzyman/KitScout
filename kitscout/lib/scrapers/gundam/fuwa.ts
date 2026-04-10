@@ -1,38 +1,74 @@
 import axios from "axios";
-//import * as cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { KitResult } from "@/types/kit";
 
-//note: fn. returns a promise that resolves to KitResult object
-export async function scrapeFuwa(query: string): Promise<KitResult[]>{
+//THIS IS A TEMPLATE SCRAPER -> COPY FUNCTIONALITY FOR ALL SCRAPERS
+//BUT CHANGE HTML SPECIFICS TO MATCH EACH SITE
 
-    //this is the JSON endpoint
-    const url = `https://fuwafuwaland.ca/search/suggest.json?q=${encodeURIComponent(query)}`;
+export async function scrapeFuwa(query: string): Promise<KitResult[]> {
+  const url = `https://fuwafuwaland.ca/search?q=${encodeURIComponent(query)}`;
 
-    const {data} = await axios.get(url, {
-        headers:{
-            "User-Agent": "Mozilla/5.0",
-        }, timeout: 10000,
-    });
+  const { data: html } = await axios.get(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0",
+    },
+    timeout: 10000,
+  });
 
-    const results: KitResult[] = []; 
-    const products = data?.resources?.results?.products ?? [];
+  const $ = cheerio.load(html);
+  const results: KitResult[] = [];
 
-    for (const p of products) {
-        const name = p.title;
-        const price = parseFloat(p.price_max ?? p.price);
-        const currency = "CAD";
-        const link = p.url.startsWith("http") ? p.url : `https://fuwafuwaland.ca${p.url}`;
-        const image = p.image || p.featured_image?.url;
-        const source = "Fuwa Fuwa Land";
+  //iterate product card
+  $(".grid__item, .card").each((_, el) => {
+    const container = $(el);
 
-        if (!name || !link || isNaN(price)) continue;
+    //link
+    const linkEl = container.find("a[href*='/products/']").first();
+    const link = linkEl.attr("href");
+    if (!link) return;
 
-        results.push({ name, price, currency, link, image,source });
-    }
+    const fullLink = link.startsWith("http")
+      ? link
+      : `https://fuwafuwaland.ca${link}`;
 
-    const uniqueResults = Array.from(
-        new Map(results.map(item => [item.link, item])).values()
+    //name
+    const name =
+      container.find("h3, .card__heading").first().text().trim() ||
+      linkEl.text().trim();
+
+    //img
+    const image =
+      container.find("img").attr("src") ||
+      container.find("img").attr("data-src") ||
+      "";
+
+    //price)
+    const priceText =
+      container.find(".price-item--sale").first().text().trim() ||
+      container.find(".price-item--regular").first().text().trim();
+
+    const price = parseFloat(
+      priceText.replace(/[^\d.]/g, "")
     );
 
-    return uniqueResults;
+    const currency = "CAD";
+    const source = "Fuwa Fuwa Land";
+
+    if (!name || !fullLink || isNaN(price)) return;
+
+    results.push({
+      name,
+      price,
+      currency,
+      link: fullLink,
+      image,
+      source,
+    });
+  });
+
+  const uniqueResults = Array.from(
+    new Map(results.map(item => [item.link, item])).values()
+  );
+
+  return uniqueResults;
 }
