@@ -21,6 +21,8 @@ export async function gundamSearch(
   sort?: string
 ): Promise<(KitResultWithCAD)[]> {
 
+  console.log("SEARCHING GUNPLA");
+
   const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}`;
 
   const cached = await redis.get(cacheKey);

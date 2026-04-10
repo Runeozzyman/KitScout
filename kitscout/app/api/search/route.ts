@@ -26,11 +26,11 @@ export async function GET(req: NextRequest) {
     let results;
 
     if (type === "Gunpla") {
-      results = await gundamSearch(query, min, max, sort);
+        results = await gundamSearch(query, min, max, sort);
     } else if (type === "Models") {
-      results = await scrapeModels(query);
+        results = await scrapeModels(query);
     } else {
-      results = await scrapeWarhammer(query, min, max, sort)
+        results = await scrapeWarhammer(query, min, max, sort)
     }
 
     return Response.json(results);
