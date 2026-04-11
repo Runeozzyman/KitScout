@@ -1,38 +1,61 @@
 import axios from "axios";
-//import * as cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import { KitResult } from "@/types/kit";
 
-//note: fn. returns a promise that resolves to KitResult object
-export async function scrapePlanet(query: string): Promise<KitResult[]>{
+export async function scrapePlanet(query: string): Promise<KitResult[]> {
+  const url = `https://www.gundamplanet.com/search?q=${encodeURIComponent(query)}`;
 
-    //this is the JSON endpoint
-    const url = `https://www.gundamplanet.com/search/suggest.json?q=${encodeURIComponent(query)}`;
+  const { data: html } = await axios.get(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0",
+    },
+    timeout: 10000,
+  });
 
-    const {data} = await axios.get(url, {
-        headers:{
-            "User-Agent": "Mozilla/5.0",
-        }, timeout: 10000,
+  const $ = cheerio.load(html);
+  const results: KitResult[] = [];
+
+  $("li.grid__item").each((_, el) => {
+    const container = $(el);
+
+    const linkEl = container.find("a[href*='/products/']").first();
+    const link = linkEl.attr("href");
+    const name = container
+        .find("a.card-title-link")
+        .first()
+        .text()
+        .trim();
+
+    if (!link || !name) return;
+
+    const fullLink = `https://www.gundamplanet.com${link}`;
+
+    const image =
+      container.find("img").attr("src") ||
+      container.find("img").attr("data-src") ||
+      "";
+
+    const priceText =
+      container.find(".price-item--sale").first().text().trim() ||
+      container.find(".price-item--regular").first().text().trim();
+
+    const price = parseFloat(priceText.replace(/[^\d.]/g, ""));
+
+    if (isNaN(price)) return;
+
+    results.push({
+      name,
+      price,
+      currency: "USD",
+      link: fullLink,
+      image,
+      source: "Gundam Planet",
     });
+  });
 
-    const results: KitResult[] = []; 
-    const products = data?.resources?.results?.products ?? [];
+  const uniqueResults = Array.from(
+    new Map(results.map(item => [item.link, item])).values()
+  );
 
-    for (const p of products) {
-        const name = p.title;
-        const price = parseFloat(p.price_max ?? p.price);
-        const currency = "USD";
-        const link = p.url.startsWith("http") ? p.url : `https://www.gundamplanet.com${p.url}`;
-        const image = p.image || p.featured_image?.url;
-        const source = "Gundam Planet";
-
-        if (!name || !link || isNaN(price)) continue;
-
-        results.push({ name, price, currency, link, image, source });
-    }
-
-    const uniqueResults = Array.from(
-        new Map(results.map(item => [item.link, item])).values()
-    );
-
-    return uniqueResults;
+  return uniqueResults;
 }

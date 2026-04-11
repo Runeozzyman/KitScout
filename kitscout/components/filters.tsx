@@ -9,7 +9,7 @@ export default function SearchFilter({
   min = "",
   max = "",
   sort = "",
-  type = "Gundams",
+  type = "Gunpla", //THIS NEEDS TO BE DYNAMIC AND PULLED FROM THE URL
 }: filterProps) {
 
     const [searchInput, setSearchInput] = useState(query);
