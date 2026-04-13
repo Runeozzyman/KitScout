@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { filterProps }  from "@/types/filterProps";
 
 export default function SearchFilter({
@@ -9,8 +9,10 @@ export default function SearchFilter({
   min = "",
   max = "",
   sort = "",
-  type = "Gunpla", //THIS NEEDS TO BE DYNAMIC AND PULLED FROM THE URL
+  type = "", //THIS NEEDS TO BE DYNAMIC AND PULLED FROM THE URL
 }: filterProps) {
+
+    const searchParams = useSearchParams();
 
     const [searchInput, setSearchInput] = useState(query);
     const [minPrice, setMinPrice] = useState(min);
@@ -19,6 +21,8 @@ export default function SearchFilter({
 
     const router = useRouter();
 
+    const searchType = searchParams.get("type") || "";
+
 return(
     <form
           onSubmit={(e) => {
@@ -26,7 +30,7 @@ return(
 
             const params = new URLSearchParams({
               q: searchInput,
-              type,
+              ...(searchType && {type: searchType}),
               ...(minPrice && { min: minPrice }),
               ...(maxPrice && { max: maxPrice }),
               ...(sortState && { sort: sortState }),
@@ -72,7 +76,6 @@ return(
               onChange={(e) => setSortState(e.target.value)}
               className="border border-gray-300 rounded-lg p-2 w-full bg-white"
             >
-              <option value="">Sort</option>
               <option value="asc">Price Asc.</option>
               <option value="desc">Price Desc.</option>
             </select>

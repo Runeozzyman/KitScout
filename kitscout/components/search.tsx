@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 export default function SearchBar() {
 
   const [query, setQuery] = useState("");
-  const [type, setType] = useState("Gunpla");
 
   const router = useRouter();
 
@@ -25,26 +24,17 @@ export default function SearchBar() {
     </h1>
 
     <p className="text-gray-500 mb-6 text-center">
-      Compare prices across multiple stores instantly.
+      Compare prices across multiple sites instantly.
     </p>
 
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        router.push(`/search?q=${encodeURIComponent(query)}&type=${type}`);
+        router.push(`/search?q=${encodeURIComponent(query)}`);
       }}
       className="flex flex-col sm:flex-row gap-2 w-full"
     >
-      <select
-        value={type}
-        onChange={(e) => setType(e.target.value)}
-        className="border border-gray-400 rounded-lg p-2 bg-white w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        <option value="Gunpla">Gunpla</option>
-        <option value="Models">Models</option>
-        <option value="Warhammer">Warhammer</option>
-      </select>
-
+      
       <input
         className="border border-gray-300 rounded-lg p-2 text-center bg-white w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
         type="text"

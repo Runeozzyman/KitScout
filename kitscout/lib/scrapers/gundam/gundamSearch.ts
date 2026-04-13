@@ -2,10 +2,12 @@ import axios from "axios";
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { KitResultWithCAD } from "@/types/kitWithCAD";
+
 import { scrapeFuwa } from "./fuwa";
 import { scrapePanda } from "./panda";
 import { scrapePlanet } from "./gundamPlanet";
-import { scrapeTorchlight } from "../warhammer/torchlight";
+import { scrapeTorchlight } from "./torchlight";
+
 import { getRate } from "@/utils/currency";
 
 function normalizeQuery(query: string) {
@@ -39,6 +41,7 @@ export async function gundamSearch(
     scrapeFuwa(query),
     scrapePlanet(query),
     scrapePanda(query),
+    scrapeTorchlight(query),
   ]);
 
   const merged = results
