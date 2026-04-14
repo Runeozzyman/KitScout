@@ -2,17 +2,16 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import SkeletonResult from "../../components/skeletonResults";
 import Header from "../../components/header";
 import SearchFilter from "@/components/filters";
-import ResultCard from "@/components/resultCard";
 import ResultList from "@/components/resultList";
 import FindNearbyStores from "@/components/nearbyStores";
+import Pagination from "@/components/pagination";
 
 export default function Search() {
-
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -26,6 +25,9 @@ export default function Search() {
   const [minPrice, setMinPrice] = useState(min);
   const [maxPrice, setMaxPrice] = useState(max);
   const [sortState, setSortState] = useState(sort);
+  const [page, setPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 15;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["search", query, type, min, max, sort],
@@ -47,19 +49,32 @@ export default function Search() {
     refetchOnWindowFocus: false,
   });
 
+  const results = data || [];
+
+  const start = (page - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+
+  const paginatedResults = results.slice(start, end);
+
+  useEffect(() => {
+    setPage(1);
+  }, [query, type, min, max, sort]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [page]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
 
       <div className="w-full border-b bg-gray-50">
-
         <SearchFilter 
           query={searchInput}
           min={minPrice}
           max={maxPrice}
           sort={sortState}
         />
-
       </div>
 
       <div className="flex flex-col items-center px-4 py-6 w-full">
@@ -77,17 +92,25 @@ export default function Search() {
         
         {error && <div>Something went wrong</div>}
 
-        {data && data.length > 0 && (
-          <ResultList data={data}/>
+        {!isLoading && results.length > 0 && (
+          <>
+            <ResultList data={paginatedResults} />
+
+            <Pagination
+              page={page}
+              totalItems={results.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={setPage}
+            />
+          </>
         )}
 
-        {!isLoading && data?.length === 0 && (
+        {!isLoading && results.length === 0 && (
           <div className="mt-4 animate-fade-in">No results found</div>
         )}
       </div>
 
       <FindNearbyStores />
-
     </div>
   );
 }

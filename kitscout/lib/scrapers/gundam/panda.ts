@@ -73,7 +73,6 @@ export async function scrapePanda(query: string): Promise<KitResult[]> {
       currency: "CAD",
       link: fullLink,
       image,
-      inStock,
       source: "Panda Hobby",
     });
   });
