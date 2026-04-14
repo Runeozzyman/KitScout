@@ -86,7 +86,7 @@ export default function Search() {
         )}
       </div>
 
-        <FindNearbyStores />
+      <FindNearbyStores />
 
     </div>
   );

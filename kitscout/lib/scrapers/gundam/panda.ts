@@ -50,6 +50,18 @@ export async function scrapePanda(query: string): Promise<KitResult[]> {
       image = "https:" + image;
     }
 
+    const classList = container.attr("class") || "";
+
+    let inStock: boolean | null = null;
+
+    if (classList.includes("snize-product-out-of-stock")) {
+      inStock = false;
+    } else if (classList.includes("snize-product-in-stock")) {
+      inStock = true;
+    } else {
+      inStock = true;
+    }
+
     if (!name || !fullLink || isNaN(price)) {
       console.log("SKIPPED:", { name, priceText });
       return;
@@ -61,6 +73,7 @@ export async function scrapePanda(query: string): Promise<KitResult[]> {
       currency: "CAD",
       link: fullLink,
       image,
+      inStock,
       source: "Panda Hobby",
     });
   });
