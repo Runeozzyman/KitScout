@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { filterProps }  from "@/types/filterProps";
+
+type filterProps = {
+    query?: string;
+    min?: string;
+    max?: string;
+    sort?: string;
+    type?: string;
+};
 
 export default function SearchFilter({
   query = "",

@@ -1,3 +1,5 @@
+//external API used for CAD to USD conversion
+
 export async function getRate(from: string): Promise<number> {
   if (from === "CAD") return 1;
 
