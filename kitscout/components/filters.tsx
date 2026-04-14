@@ -83,6 +83,7 @@ return(
               onChange={(e) => setSortState(e.target.value)}
               className="border border-gray-300 rounded-lg p-2 w-full bg-white"
             >
+              <option>Sort By:</option>
               <option value="asc">Price Asc.</option>
               <option value="desc">Price Desc.</option>
             </select>

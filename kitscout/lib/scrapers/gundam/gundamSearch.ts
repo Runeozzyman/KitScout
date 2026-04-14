@@ -1,4 +1,3 @@
-import axios from "axios";
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { KitResultWithCAD } from "@/types/kitWithCAD";
@@ -9,6 +8,7 @@ import { scrapePlanet } from "./gundamPlanet";
 import { scrapeTorchlight } from "./torchlight";
 
 import { getRate } from "@/utils/currency";
+import { fuzzySearch } from "@/utils/fuzzySearch";
 
 function normalizeQuery(query: string) {
   return query
@@ -22,7 +22,7 @@ export async function gundamSearch(
   min?: number,
   max?: number,
   sort?: string
-): Promise<(KitResultWithCAD)[]> {
+): Promise<KitResultWithCAD[]> {
 
   console.log("SEARCHING GUNPLA");
 
@@ -31,24 +31,33 @@ export async function gundamSearch(
   const cached = await redis.get(cacheKey);
 
   if (cached) {
-    console.log("REDIS CACHE HIT: ", query);
+    console.log("REDIS CACHE HIT:", query);
     return JSON.parse(cached) as KitResultWithCAD[];
   }
 
-  console.log("REDIS CACHE MISS: ", query);
+  console.log("REDIS CACHE MISS:", query);
 
-  const results = await Promise.allSettled([
+  //scraping
+  const rawResults = await Promise.allSettled([
     scrapeFuwa(query),
     scrapePlanet(query),
     scrapePanda(query),
     scrapeTorchlight(query),
   ]);
 
-  const merged = results
-    .filter((r): r is PromiseFulfilledResult<KitResult[]> => r.status === "fulfilled")
+  //flatten results
+  const merged: KitResult[] = rawResults
+    .filter(
+      (r): r is PromiseFulfilledResult<KitResult[]> =>
+        r.status === "fulfilled"
+    )
     .flatMap((r) => r.value);
 
-  const currencies = [...new Set(merged.map((item) => item.currency))];
+  //fuzzy search
+  const ranked = fuzzySearch(merged, query);
+
+  //convert currencies
+  const currencies = [...new Set(ranked.map((item) => item.currency))];
 
   const rateEntries = await Promise.all(
     currencies.map(async (cur) => [cur, await getRate(cur)])
@@ -56,13 +65,15 @@ export async function gundamSearch(
 
   const rates = Object.fromEntries(rateEntries) as Record<string, number>;
 
-  const normalized: KitResultWithCAD[] = merged.map((item) => ({
+  //normalize all results to include CAD
+  const normalized: KitResultWithCAD[] = ranked.map((item) => ({
     ...item,
     priceCAD: Number(
       (item.price * (rates[item.currency] ?? 1)).toFixed(2)
     ),
   }));
 
+  //optional filters
   let filtered = normalized;
 
   if (min !== undefined) {
@@ -77,16 +88,9 @@ export async function gundamSearch(
     filtered.sort((a, b) => a.priceCAD - b.priceCAD);
   } else if (sort === "desc") {
     filtered.sort((a, b) => b.priceCAD - a.priceCAD);
-  } else {
-    filtered.sort((a, b) => a.priceCAD - b.priceCAD);
   }
 
-  await redis.set(
-    cacheKey,
-    JSON.stringify(filtered),
-    "EX",
-    3600
-  );
+  await redis.set(cacheKey, JSON.stringify(filtered), "EX", 3600);
 
   return filtered;
 }
