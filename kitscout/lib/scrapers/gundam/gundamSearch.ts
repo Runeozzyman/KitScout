@@ -37,7 +37,7 @@ export async function gundamSearch(
 
   console.log("REDIS CACHE MISS:", query);
 
-  //scraping
+  //scrape
   const rawResults = await Promise.allSettled([
     scrapeFuwa(query),
     scrapePlanet(query),
