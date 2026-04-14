@@ -16,7 +16,7 @@ export default function SearchFilter({
   min = "",
   max = "",
   sort = "",
-  type = "", //THIS NEEDS TO BE DYNAMIC AND PULLED FROM THE URL
+  type = "",
 }: filterProps) {
 
     const searchParams = useSearchParams();

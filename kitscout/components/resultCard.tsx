@@ -13,8 +13,8 @@ export default function ResultCard({ item }: Props) {
         target="_blank"
         rel="noopener noreferrer"
         className={`border p-3 rounded-lg flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center 
-          w-full hover:shadow-md hover:bg-gray-50 transition transform hover:scale-[1.01] active:scale-[0.99] 
-          cursor-pointer
+          w-full hover:shadow-md hover:bg-blue-100 transition transform hover:scale-[1.01] active:scale-[0.99] 
+          cursor-pointer 
         `}
       >
         <img
