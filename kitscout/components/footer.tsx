@@ -16,8 +16,12 @@ export default function FloatingSocials() {
     >
       <div className="flex items-center gap-5 bg-white border shadow-lg rounded-full px-4 py-2 pointer-events-auto">
         
-        <a href="https://linkedin.com/in/austinwort/" className="text-black hover:text-[#0077B5] transition-colors cursor-pointer">
-            <FaLinkedin size={35} />
+        <a href="https://linkedin.com/in/austinwort/"
+           className="text-black hover:text-[#0077B5] transition-colors cursor-pointer"
+           target="_blank"
+           rel="noopener noreferrer"
+           >
+              <FaLinkedin size={35} />
         </a>
 
         <a href="https://github.com/Runeozzyman" 

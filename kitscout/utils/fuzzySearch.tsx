@@ -7,7 +7,7 @@ import Fuse from "fuse.js";
 export function fuzzySearch(results: KitResult[], query:string){
     const fuse = new Fuse(results,{
         keys: ["name", "source"],
-        threshold: 0.4,
+        threshold: 0.4, //lower -> stricter | adjust to test
         ignoreLocation: true,
     });
 
