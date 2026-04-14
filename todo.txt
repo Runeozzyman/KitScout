@@ -1,5 +1,4 @@
-LAST: converted some existing search endpoints into scrapers using cheerio,
-      added backdrop to home page, fixed small issue with type selection
+LAST: removed non-Gunpla scrapers to counter scope creep, added pagination
 
-TODO: convert all endpoints into cheerio scrapers, add pagination,
-      fix filter bar to pull type from URL instead of defaulting to Gunpla
+TODO: implement supabase functionality w/ accounts, add wishlist badge/function,
+      experiment with redis cache TTL
