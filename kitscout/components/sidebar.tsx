@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth/authProvider"
+import { signOut } from "@/lib/supabase/auth"
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false)
@@ -98,6 +99,7 @@ export default function Sidebar() {
       <button
         onClick={() => {
           setOpen(false);
+          signOut();
         }}
       >
         Sign Out
