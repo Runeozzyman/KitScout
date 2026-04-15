@@ -1,4 +1,4 @@
-LAST: removed non-Gunpla scrapers to counter scope creep, added pagination
+LAST: added wishlist badge, implemented fuzzy search / recommendations
 
 TODO: implement supabase functionality w/ accounts, add wishlist badge/function,
       add debounced search recommendations ,experiment with redis cache TTL,
