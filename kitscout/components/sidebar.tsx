@@ -12,7 +12,6 @@ export default function Sidebar() {
   const router = useRouter();
   const {user, isLoggedIn, loading} = useAuth();
 
-  //close on esc key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -34,7 +33,7 @@ export default function Sidebar() {
       {/* hamburger icon */}
       <button
         onClick={() => setOpen(true)}
-        className="p-2 z-50 relative fixed"
+        className="p-2 z-50 relative fixed hover:cursor-pointer"
         aria-label="Open menu"
       >
         <Menu strokeWidth={1.5} className="w-6 h-6" />
@@ -57,7 +56,7 @@ export default function Sidebar() {
         {/* close button */}
         <button
           onClick={() => setOpen(false)}
-          className="absolute top-4 right-4 p-2"
+          className="absolute top-4 right-4 p-2 hover:cursor-pointer"
           aria-label="Close menu"
         >
           <X strokeWidth={1.5} className="w-5 h-5" />
@@ -66,6 +65,7 @@ export default function Sidebar() {
         <div className="flex flex-col gap-4 mt-16 p-4">
 
   <button
+    className="hover:cursor-pointer"
     onClick={() => {
       setOpen(false);
       router.push("/");
@@ -76,6 +76,7 @@ export default function Sidebar() {
 
   {!isLoggedIn && (
     <button
+      className="hover:cursor-pointer"
       onClick={() => {
         setOpen(false);
         router.push("/login");
@@ -88,6 +89,7 @@ export default function Sidebar() {
   {isLoggedIn && (
     <>
       <button
+        className="hover:cursor-pointer"
         onClick={() => {
           setOpen(false);
           router.push("/wishlist");
@@ -97,6 +99,7 @@ export default function Sidebar() {
       </button>
 
       <button
+        className="hover:cursor-pointer"
         onClick={() => {
           setOpen(false);
           signOut();

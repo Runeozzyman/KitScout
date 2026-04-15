@@ -1,6 +1,4 @@
 LAST: added proxy(middleware) for protected routing, implemented supabase register, login, and sign out functions,
       added an auth provider and useAuth hook for conditional rendering
 
-TODO: implement supabase functionality w/ accounts, add wishlist badge/function,
-      add debounced search recommendations ,experiment with redis cache TTL,
-      add recommended item filter
+TODO: add debounced search recommendations, wishlist functionality (edit supabase table and RLS policies)

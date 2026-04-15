@@ -62,7 +62,7 @@ export default function LoginBox() {
         type="submit"
         className="w-full bg-blue-500 text-white py-2.5 rounded-lg font-medium hover:bg-blue-600 transition active:scale-[0.98]"
       >
-        Register
+        Login
       </button>
 
       <p className="text-sm text-gray-500 text-center">
