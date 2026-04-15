@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth/authProvider"
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false)
 
   const router = useRouter();
+  const {user, isLoggedIn, loading} = useAuth();
 
   //close on esc key
   useEffect(() => {
@@ -61,32 +63,48 @@ export default function Sidebar() {
         </button>
 
         <div className="flex flex-col gap-4 mt-16 p-4">
-          <button onClick={() => {
-            setOpen(false)
-            router.push("/")
-            }
-          }>Home</button>
 
-          <button onClick={() => {
-            setOpen(false)
-            router.push("/wishlist")
-            }
-          }>Wishlist</button>
+  <button
+    onClick={() => {
+      setOpen(false);
+      router.push("/");
+    }}
+  >
+    Home
+  </button>
 
-          <button onClick={() => {
-            setOpen(false)
-            router.push("/login")
-            }
-          }>Login</button>
+  {!isLoggedIn && (
+    <button
+      onClick={() => {
+        setOpen(false);
+        router.push("/login");
+      }}
+    >
+      Login
+    </button>
+  )}
 
-          <button onClick={() => {
-            setOpen(false)
-            router.push("/")
-            }
-          }>Sign Out</button>
+  {isLoggedIn && (
+    <>
+      <button
+        onClick={() => {
+          setOpen(false);
+          router.push("/wishlist");
+        }}
+      >
+        Wishlist
+      </button>
 
-
-        </div>
+      <button
+        onClick={() => {
+          setOpen(false);
+        }}
+      >
+        Sign Out
+      </button>
+    </>
+  )}
+</div>
       </div>
     </>
   )

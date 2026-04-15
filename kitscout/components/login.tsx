@@ -14,16 +14,6 @@ export default function LoginBox() {
 
   const router = useRouter();
 
-  const {user, isLoggedIn, loading} = useAuth();
-
-  useEffect( ()=>{
-    if(!loading && isLoggedIn){
-      router.push("/");
-    }
-  }, [loading, isLoggedIn, router]);
-
-  if (loading || isLoggedIn) return null;
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
