@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 import Sidebar from "./sidebar";
 
@@ -16,7 +18,7 @@ export default function Header() {
         {/* CENTER: Logo */}
         <button
           onClick={() => router.push("/")}
-          className="absolute left-1/2 -translate-x-1/2 text-lg sm:text-xl font-bold tracking-tight"
+          className="absolute left-1/2 -translate-x-1/2 text-lg sm:text-xl font-bold tracking-tight hover:cursor-pointer"
         >
           <img src="/logo.svg" className="h-15" />
         </button>

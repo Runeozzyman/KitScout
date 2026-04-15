@@ -4,7 +4,23 @@ import HomeBackground from "@/components/background";
 import Header from "@/components/header";
 import LoginBox from "@/components/login";
 
+import { useAuth } from "@/lib/auth/authProvider";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 export default function Login() {
+  const { isLoggedIn, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && isLoggedIn) {
+      router.push("/");
+    }
+  }, [loading, isLoggedIn, router]);
+
+  // ✅ block entire page
+  if (loading || isLoggedIn) return null;
+
   return (
     <div className="relative min-h-screen">
       <Header />
