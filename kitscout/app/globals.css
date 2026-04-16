@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html,body{
+  margin:0;
+  padding:0;
+}
 
 body {
   @apply text-black;
@@ -40,4 +44,19 @@ body {
   animation: slide-in 0.5s ease-out;
   animation-delay: 0.15s;
   animation-fill-mode: both;
+}
+
+@keyframes drop-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-drop-down {
+  animation: drop-down 0.4s ease-out;
 }

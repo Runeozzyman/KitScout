@@ -7,7 +7,7 @@ export default function Header() {
   const router = useRouter()
 
   return (
-    <div className="w-full bg-white sticky top-0 z-50 shadow-sm">
+    <div className="w-full bg-white sticky top-0 z-50 border-b">
       <div className="relative w-full flex items-center p-6">
 
         {/* LEFT: Hamburger */}

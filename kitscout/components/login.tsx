@@ -29,7 +29,7 @@ export default function LoginBox() {
   return (
 
     <form 
-      className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-xl rounded-2xl p-8 flex flex-col gap-5 border"
+      className="w-full max-w-md bg-white/90 backdrop-blur-md shadow-xl rounded-2xl p-8 flex flex-col gap-5 border animate-slide-in"
       onSubmit={handleSubmit}
     >
       

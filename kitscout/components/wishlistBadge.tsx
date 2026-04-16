@@ -6,6 +6,7 @@ import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { KitResultWithCAD } from "@/types/kitWithCAD";
 import { toggleWishlistItem } from "@/lib/supabase/wishlist";
+import { useRouter } from "next/navigation";
 
 type Props = {
   item: KitResultWithCAD;
@@ -18,8 +19,13 @@ export default function WishlistBadge({ item, initialWishlisted = false }: Props
   const [loading, setLoading] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(initialWishlisted);
 
+  const router = useRouter();
+
   const handleClick = async () => {
-    if (!isLoggedIn || !user) return;
+    if (!isLoggedIn || !user){
+        router.push("/login");
+        return;
+    };
     if (loading) return;
 
     // 1. optimistic UI update
