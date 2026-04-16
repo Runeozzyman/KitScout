@@ -54,7 +54,7 @@ export default function ResultCard({ item }: Props) {
           e.stopPropagation();
         }}
       >
-        <WishlistBadge />
+        <WishlistBadge item={item}/>
       </div>
     </div>
   );
