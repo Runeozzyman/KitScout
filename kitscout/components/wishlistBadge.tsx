@@ -10,41 +10,41 @@ import { useRouter } from "next/navigation";
 
 type Props = {
   item: KitResultWithCAD;
-  initialWishlisted?: boolean; // optional if you already know from DB
+  isWishlisted: boolean;
+  isLoading?: boolean;
 };
 
-export default function WishlistBadge({ item, initialWishlisted = false }: Props) {
+export default function WishlistBadge({ item, isWishlisted, isLoading }: Props) {
   const { user, isLoggedIn } = useAuth();
-
-  const [loading, setLoading] = useState(false);
-  const [isWishlisted, setIsWishlisted] = useState(initialWishlisted);
-
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
+  const [localState, setLocalState] = useState(isWishlisted);
+
+  useEffect(() => {
+    setLocalState(isWishlisted);
+  }, [isWishlisted]);
+
   const handleClick = async () => {
-    if (!isLoggedIn || !user){
-        router.push("/login");
-        return;
-    };
+    if (!isLoggedIn || !user) {
+      router.push("/login");
+      return;
+    }
+
     if (loading) return;
 
-    // 1. optimistic UI update
-    const prev = isWishlisted;
-    setIsWishlisted(!prev);
+    const prev = localState;
+    setLocalState(!prev);
     setLoading(true);
 
     try {
-      const result = await toggleWishlistItem({
+      await toggleWishlistItem({
         item,
         userId: user.id,
       });
-
-      console.log(result); // "added" | "removed"
     } catch (err) {
       console.error(err);
-
-      // 2. revert if failed
-      setIsWishlisted(prev);
+      setLocalState(prev);
     } finally {
       setLoading(false);
     }
@@ -54,10 +54,10 @@ export default function WishlistBadge({ item, initialWishlisted = false }: Props
     <span
       onClick={handleClick}
       className={`flex flex-row rounded p-2 w-max cursor-pointer transition 
-        ${isWishlisted ? "bg-yellow-400" : "bg-yellow-300 hover:bg-yellow-400"}
+        ${localState ? "bg-yellow-400" : "bg-yellow-300 hover:bg-yellow-400"}
       `}
     >
-      {isWishlisted ? (
+      {localState ? (
         <FaStar size={18} />
       ) : (
         <CiStar size={18} />

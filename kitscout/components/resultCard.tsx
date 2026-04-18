@@ -3,58 +3,46 @@ import WishlistBadge from "./wishlistBadge";
 
 type Props = {
   item: KitResultWithCAD;
+  isWishlisted: boolean;
+  isLoading?: boolean;
 };
 
-export default function ResultCard({ item }: Props) {
+export default function ResultCard({ item, isWishlisted, isLoading }: Props) {
   return (
     <div className="relative">
       <a
         href={item.link}
         target="_blank"
         rel="noopener noreferrer"
-        className={`border p-3 rounded-lg flex flex-col sm:flex-row gap-3 sm:gap-4 items-start sm:items-center 
-          w-full hover:shadow-md hover:bg-blue-100 transition transform hover:scale-[1.01] active:scale-[0.99] 
-          cursor-pointer 
-        `}
+        className="border p-3 rounded-lg flex gap-4 hover:shadow-md"
       >
         <img
           src={item.image || "/placeholder.png"}
           alt={item.name}
-          loading="lazy"
-          className="w-20 h-20 object-contain bg-white rounded p-1 flex-shrink-0"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src = "/placeholder.jpg";
-          }}
+          className="w-20 h-20 object-contain bg-white rounded"
         />
-        
-        <div className="flex flex-col flex-1 w-full gap-1">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-2">
-            
-            <div className="flex items-center gap-2">
-              <div className="font-semibold break-words">
-                {item.name}
-              </div>
-            </div>
 
-            <div className="font-medium whitespace-nowrap sm:text-right">
-              ${item.priceCAD.toFixed(2)} CAD
-            </div>
+        <div className="flex flex-col flex-1">
+          <div className="flex justify-between">
+            <div className="font-semibold">{item.name}</div>
+            <div>${item.priceCAD.toFixed(2)} CAD</div>
           </div>
-          
-          <div className="text-sm text-gray-500">
-            {item.source}
-          </div>
+          <div className="text-sm text-gray-500">{item.source}</div>
         </div>
       </a>
 
       <div
-        className="absolute bottom-2 right-2 z-10"
+        className="absolute bottom-2 right-2"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
       >
-        <WishlistBadge item={item}/>
+        <WishlistBadge
+          item={item}
+          isWishlisted={isWishlisted}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
