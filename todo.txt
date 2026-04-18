@@ -1,4 +1,4 @@
 LAST: added query to pull wishlist items on search page load, made wishlist icon consistent across pages,
-      added wishlist page to display all wishlisted items
+      added wishlist page to display all wishlisted items, added wishlisted item removal icon and functionality
 
-TODO: make wishlist page items removable
+TODO: see how to make star icon state more consistent (invalidate item state on change ?)
