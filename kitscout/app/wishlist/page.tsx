@@ -4,7 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/authProvider";
 import { fetchFullWishlist } from "@/lib/supabase/wishlist";
+import { removeWishlistItem } from "@/lib/supabase/wishlist";
 import { getKitId } from "@/utils/kitHelper";
+import { useQueryClient } from "@tanstack/react-query";
 
 import SkeletonResult from "../../components/skeletonResults";
 import Header from "../../components/header";
@@ -13,6 +15,7 @@ import Pagination from "@/components/pagination";
 
 export default function WishlistPage() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 15;
@@ -46,6 +49,21 @@ export default function WishlistPage() {
   const end = start + ITEMS_PER_PAGE;
   const paginatedResults = results.slice(start, end);
 
+  const handleRemove = async (item: any) => {
+    if (!user) return;
+
+        const kitId = getKitId(item.link);
+
+        try {
+            await removeWishlistItem(user.id, kitId);
+
+            queryClient.invalidateQueries({ queryKey: ["wishlistFull"] });
+
+        } catch (err) {
+            console.error("Failed to remove item", err);
+        }
+    };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -68,9 +86,10 @@ export default function WishlistPage() {
         {!isLoading && results.length > 0 && (
           <>
             <ResultList
-              data={paginatedResults}
-              wishlistSet={wishlistSet}
-              hideWishlistBadge={true}
+                data={paginatedResults}
+                wishlistSet={wishlistSet}
+                hideWishlistBadge={true}
+                onRemove={handleRemove}
             />
 
             <Pagination

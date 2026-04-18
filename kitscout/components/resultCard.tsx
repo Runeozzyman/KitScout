@@ -1,14 +1,24 @@
+"use client";
+
 import { KitResultWithCAD } from "@/types/kitWithCAD";
 import WishlistBadge from "./wishlistBadge";
+import { FaTrash } from "react-icons/fa";
 
 type Props = {
   item: KitResultWithCAD;
   isWishlisted: boolean;
   isLoading?: boolean;
   hideWishlistBadge?: boolean;
+  onRemove?: () => void;
 };
 
-export default function ResultCard({ item, isWishlisted, isLoading, hideWishlistBadge}: Props) {
+export default function ResultCard({
+  item,
+  isWishlisted,
+  isLoading,
+  hideWishlistBadge,
+  onRemove,
+}: Props) {
   return (
     <div className="relative">
       <a
@@ -33,20 +43,28 @@ export default function ResultCard({ item, isWishlisted, isLoading, hideWishlist
       </a>
 
       <div
-        className="absolute bottom-2 right-2"
+        className="absolute bottom-2 right-2 flex gap-2"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
       >
+        {!hideWishlistBadge && (
+          <WishlistBadge
+            item={item}
+            isWishlisted={isWishlisted}
+            isLoading={isLoading}
+          />
+        )}
 
-        { !hideWishlistBadge &&
-        <WishlistBadge
-          item={item}
-          isWishlisted={isWishlisted}
-          isLoading={isLoading}
-        />
-        }
+        {hideWishlistBadge && onRemove && (
+          <span
+            onClick={onRemove}
+            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded cursor-pointer transition active:scale-90"
+          >
+            <FaTrash size={14} />
+          </span>
+        )}
       </div>
     </div>
   );

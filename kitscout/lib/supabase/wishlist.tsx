@@ -80,3 +80,17 @@ export async function fetchFullWishlist(userId: string){
   return data;
 }
 
+export async function removeWishlistItem(userId: string, kitId: string) {
+  const { error } = await supabase
+    .from("wishlist_items")
+    .delete()
+    .eq("user_id", userId)
+    .eq("kit_id", kitId);
+
+  if (error) {
+    console.error("Error removing wishlist item:", error);
+    throw error;
+  }
+
+  return { success: true };
+}

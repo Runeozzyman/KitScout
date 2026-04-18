@@ -1,4 +1,4 @@
-LAST: added wishlist functionality and related supabase client-side functions, altered supabase RLC policies,
-      added header to homepage
+LAST: added query to pull wishlist items on search page load, made wishlist icon consistent across pages,
+      added wishlist page to display all wishlisted items
 
-TODO: pull wishlisted items on search, make wishlist icon consistent across UI
+TODO: make wishlist page items removable
