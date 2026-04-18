@@ -67,7 +67,8 @@ export async function fetchFullWishlist(userId: string){
       kit_price,
       kit_price_CAD,
       kit_img,
-      kit_source
+      kit_source,
+      kit_link
       `)
     .eq("user_id", userId);
 

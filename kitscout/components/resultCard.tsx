@@ -5,9 +5,10 @@ type Props = {
   item: KitResultWithCAD;
   isWishlisted: boolean;
   isLoading?: boolean;
+  hideWishlistBadge?: boolean;
 };
 
-export default function ResultCard({ item, isWishlisted, isLoading }: Props) {
+export default function ResultCard({ item, isWishlisted, isLoading, hideWishlistBadge}: Props) {
   return (
     <div className="relative">
       <a
@@ -38,11 +39,14 @@ export default function ResultCard({ item, isWishlisted, isLoading }: Props) {
           e.stopPropagation();
         }}
       >
+
+        { !hideWishlistBadge &&
         <WishlistBadge
           item={item}
           isWishlisted={isWishlisted}
           isLoading={isLoading}
         />
+        }
       </div>
     </div>
   );

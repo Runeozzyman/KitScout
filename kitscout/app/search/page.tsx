@@ -98,6 +98,7 @@ export default function Search() {
               data={paginatedResults}
               wishlistSet={wishlistSet}
               isWishlistLoading={isWishlistLoading}
+              hideWishlistBadge={false}
             />
 
             <Pagination

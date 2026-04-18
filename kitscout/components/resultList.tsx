@@ -6,9 +6,10 @@ type Props = {
   data: KitResultWithCAD[];
   wishlistSet: Set<string>;
   isWishlistLoading?: boolean;
+  hideWishlistBadge?: boolean;
 };
 
-export default function ResultList({ data, wishlistSet, isWishlistLoading }: Props) {
+export default function ResultList({ data, wishlistSet, isWishlistLoading, hideWishlistBadge}: Props) {
   return (
     <div className="w-full max-w-5xl grid gap-4">
       {data.map((item) => (
@@ -17,6 +18,7 @@ export default function ResultList({ data, wishlistSet, isWishlistLoading }: Pro
           item={item}
           isWishlisted={wishlistSet.has(getKitId(item.link))}
           isLoading={isWishlistLoading}
+          hideWishlistBadge={hideWishlistBadge}
         />
       ))}
     </div>
