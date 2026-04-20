@@ -28,11 +28,10 @@ export async function gundamSearch(
 
   const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}`;
 
-  const cached = await redis.get(cacheKey);
+  const cached = await redis.get<KitResultWithCAD[]>(cacheKey);
 
   if (cached) {
-    console.log("REDIS CACHE HIT:", query);
-    return JSON.parse(cached) as KitResultWithCAD[];
+    return cached;
   }
 
   console.log("REDIS CACHE MISS:", query);
@@ -90,7 +89,7 @@ export async function gundamSearch(
     filtered.sort((a, b) => b.priceCAD - a.priceCAD);
   }
 
-  await redis.set(cacheKey, JSON.stringify(filtered), "EX", 3600);
+  await redis.set(cacheKey, filtered, { ex: 900 });
 
   return filtered;
 }
