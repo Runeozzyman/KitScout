@@ -16,7 +16,7 @@ KitScout is a web-scraper-based price aggregator for Gunpla kits that allows use
   </tr>
 </table>
 
-**Link:**
+**Link:** https://kit-scout.vercel.app
 
 ## How It's Made:
 
