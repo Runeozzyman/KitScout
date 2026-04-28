@@ -68,7 +68,13 @@ export default function SearchClient() {
       <Header />
 
       <div className="w-full border-b bg-gray-50">
-        <SearchFilter />
+        <SearchFilter
+          query={query}
+          min={min}
+          max={max}
+          sort={sort}
+          type={type}
+        />
       </div>
 
       <div className="flex flex-col items-center px-4 py-6 w-full">
