@@ -13,7 +13,7 @@ import ResultList from "@/components/resultList";
 import FindNearbyStores from "@/components/nearbyStores";
 import Pagination from "@/components/pagination";
 
-export default function Search() {
+export default function SearchClient() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
 
@@ -26,10 +26,7 @@ export default function Search() {
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 15;
 
-  const {
-    data: wishlist,
-    isLoading: isWishlistLoading,
-  } = useQuery({
+  const { data: wishlist, isLoading: isWishlistLoading } = useQuery({
     queryKey: ["wishlist", user?.id],
     queryFn: () => fetchWishlistedIDs(user!.id),
     enabled: !!user,
@@ -55,10 +52,7 @@ export default function Search() {
     refetchOnWindowFocus: false,
   });
 
- const wishlistSet = new Set(
-  wishlist?.map(w => String(w.kit_id)) ?? []
-);
-
+  const wishlistSet = new Set(wishlist?.map(w => String(w.kit_id)) ?? []);
   const results = data || [];
 
   const start = (page - 1) * ITEMS_PER_PAGE;
