@@ -1,4 +1,3 @@
-LAST: added query to pull wishlist items on search page load, made wishlist icon consistent across pages,
-      added wishlist page to display all wishlisted items, added wishlisted item removal icon and functionality
+LAST: added grade field to data type, and grade filters on search page + filter component, added filter bar stylings and toggleability.
 
-TODO: see how to make star icon state more consistent (invalidate item state on change ?)
+TODO: Add region select/detect capability, and region-specific scrapers.
