@@ -91,7 +91,7 @@ export default function SearchFilter({
       <button
         type="button"
         onClick={() => setFiltersOpen((prev) => !prev)}
-        className="w-full flex items-center justify-center gap-2 py-2 border-t border-b border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-center gap-2 py-2 border-t border-b border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition hover:cursor-pointer"
       >
         <span>Filters</span>
 
