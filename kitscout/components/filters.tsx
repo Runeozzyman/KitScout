@@ -34,7 +34,8 @@ export default function SearchFilter({
     grades ? grades.split(",") : []
   );
 
-  // keep state in sync when URL changes
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   useEffect(() => {
     setSearchInput(query);
     setMinPrice(min);
@@ -72,6 +73,7 @@ export default function SearchFilter({
       }}
       className="max-w-5xl mx-auto flex flex-col gap-4 p-4"
     >
+
       <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="text"
@@ -86,46 +88,74 @@ export default function SearchFilter({
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
-        <input
-          type="number"
-          placeholder="Min $"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-          className="border border-gray-300 rounded-lg p-2 w-full bg-white"
-        />
+      <button
+        type="button"
+        onClick={() => setFiltersOpen((prev) => !prev)}
+        className="w-full flex items-center justify-center gap-2 py-2 border-t border-b border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+      >
+        <span>Filters</span>
 
-        <input
-          type="number"
-          placeholder="Max $"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          className="border border-gray-300 rounded-lg p-2 w-full bg-white"
-        />
-
-        <select
-          value={sortState}
-          onChange={(e) => setSortState(e.target.value)}
-          className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+        <span
+          className={`transition-transform duration-200 ${
+            filtersOpen ? "rotate-180" : ""
+          }`}
         >
-          <option value="">Sort By:</option>
-          <option value="asc">Price Asc.</option>
-          <option value="desc">Price Desc.</option>
-        </select>
-      </div>
+          ↓
+        </span>
+      </button>
 
-      <div className="flex flex-wrap gap-4">
-        {GRADE_OPTIONS.map((grade) => (
-          <label key={grade} className="flex items-center gap-2">
+      {filtersOpen && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
-              type="checkbox"
-              checked={selectedGrades.includes(grade)}
-              onChange={() => toggleGrade(grade)}
+              type="number"
+              placeholder="Min $"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
             />
-            {grade}
-          </label>
-        ))}
-      </div>
+
+            <input
+              type="number"
+              placeholder="Max $"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+            />
+
+            <select
+              value={sortState}
+              onChange={(e) => setSortState(e.target.value)}
+              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
+            >
+              <option value="">Sort By</option>
+              <option value="asc">Price Asc.</option>
+              <option value="desc">Price Desc.</option>
+            </select>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {GRADE_OPTIONS.map((grade) => {
+              const selected = selectedGrades.includes(grade);
+
+              return (
+                <button
+                  key={grade}
+                  type="button"
+                  onClick={() => toggleGrade(grade)}
+                  className={`px-3 py-1 rounded-full border text-sm transition ${
+                    selected
+                      ? "bg-blue-500 text-white border-blue-500"
+                      : "bg-white border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  {selected ? `✓ ${grade}` : grade}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </form>
   );
 }
