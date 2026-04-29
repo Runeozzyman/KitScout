@@ -1,6 +1,7 @@
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { KitResultWithCAD } from "@/types/kitWithCAD";
+import { GunplaGrade } from "@/types/grades";
 
 import { scrapeFuwa } from "./fuwa";
 import { scrapePanda } from "./panda";
@@ -9,6 +10,7 @@ import { scrapeTorchlight } from "./torchlight";
 
 import { getRate } from "@/utils/currency";
 import { fuzzySearch } from "@/utils/fuzzySearch";
+import { extractGrade } from "@/utils/extractGrade";
 
 function normalizeQuery(query: string) {
   return query
@@ -21,12 +23,12 @@ export async function gundamSearch(
   query: string,
   min?: number,
   max?: number,
-  sort?: string
+  sort?: string,
+  grades?: GunplaGrade[]
 ): Promise<KitResultWithCAD[]> {
-
   console.log("SEARCHING GUNPLA");
 
-  const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}`;
+  const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}:${grades?.join(",") || ""}`;
 
   const cached = await redis.get<KitResultWithCAD[]>(cacheKey);
 
@@ -36,7 +38,7 @@ export async function gundamSearch(
 
   console.log("REDIS CACHE MISS:", query);
 
-  //scrape
+  // scrape
   const rawResults = await Promise.allSettled([
     scrapeFuwa(query),
     scrapePlanet(query),
@@ -44,18 +46,23 @@ export async function gundamSearch(
     scrapeTorchlight(query),
   ]);
 
-  //flatten results
+  // flatten + normalize grades
   const merged: KitResult[] = rawResults
     .filter(
       (r): r is PromiseFulfilledResult<KitResult[]> =>
         r.status === "fulfilled"
     )
-    .flatMap((r) => r.value);
+    .flatMap((r) =>
+      r.value.map((item) => ({
+        ...item,
+        grade: item.grade ?? extractGrade(item.name),
+      }))
+    );
 
-  //fuzzy search
+  // fuzzy search
   const ranked = fuzzySearch(merged, query);
 
-  //convert currencies
+  // convert currencies
   const currencies = [...new Set(ranked.map((item) => item.currency))];
 
   const rateEntries = await Promise.all(
@@ -64,7 +71,7 @@ export async function gundamSearch(
 
   const rates = Object.fromEntries(rateEntries) as Record<string, number>;
 
-  //normalize all results to include CAD
+  // normalize all results to include CAD
   const normalized: KitResultWithCAD[] = ranked.map((item) => ({
     ...item,
     priceCAD: Number(
@@ -72,17 +79,28 @@ export async function gundamSearch(
     ),
   }));
 
-  //optional filters
+  // optional filters
   let filtered = normalized;
 
+  // price min
   if (min !== undefined) {
     filtered = filtered.filter((item) => item.priceCAD >= min);
   }
 
+  // price max
   if (max !== undefined) {
     filtered = filtered.filter((item) => item.priceCAD <= max);
   }
 
+  // grade filters
+  if (grades && grades.length > 0) {
+    filtered = filtered.filter(
+      (item) =>
+        item.grade && grades.includes(item.grade)
+    );
+  }
+
+  // sorting
   if (sort === "asc") {
     filtered.sort((a, b) => a.priceCAD - b.priceCAD);
   } else if (sort === "desc") {

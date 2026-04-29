@@ -22,6 +22,7 @@ export default function SearchClient() {
   const min = searchParams.get("min") || "";
   const max = searchParams.get("max") || "";
   const sort = searchParams.get("sort") || "";
+  const grades = searchParams.get("grades") || "";
 
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 15;
@@ -33,7 +34,7 @@ export default function SearchClient() {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["search", query, type, min, max, sort],
+    queryKey: ["search", query, type, min, max, sort, grades],
     queryFn: async () => {
       const params = new URLSearchParams({
         q: query,
@@ -41,10 +42,15 @@ export default function SearchClient() {
         ...(min && { min }),
         ...(max && { max }),
         ...(sort && { sort }),
+        ...(grades && { grades }),
       });
 
       const res = await fetch(`/api/search?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch");
+      }
+
       return res.json();
     },
     enabled: !!query,
@@ -52,16 +58,21 @@ export default function SearchClient() {
     refetchOnWindowFocus: false,
   });
 
-  const wishlistSet = new Set(wishlist?.map(w => String(w.kit_id)) ?? []);
+  const wishlistSet = new Set(
+    wishlist?.map((w) => String(w.kit_id)) ?? []
+  );
+
   const results = data || [];
 
   const start = (page - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
   const paginatedResults = results.slice(start, end);
 
-  useEffect(() => {
-    setPage(1);
-  }, [query, type, min, max, sort]);
+  // reset pagination when filters change
+  const filterKey = `${query}|${type}|${min}|${max}|${sort}|${grades}`;
+    useEffect(() => {
+      setPage(1);
+    }, [filterKey]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -74,6 +85,7 @@ export default function SearchClient() {
           max={max}
           sort={sort}
           type={type}
+          grades={grades}
         />
       </div>
 
