@@ -4,8 +4,11 @@ import { GunplaGrade } from "@/types/grades";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
+
+  const MAX_QUERY_LENGTH = 80;
+
   try {
-    const query = req.nextUrl.searchParams.get("q");
+    const query = req.nextUrl.searchParams.get("q")?.trim() ?? "";
     const minParam = req.nextUrl.searchParams.get("min");
     const maxParam = req.nextUrl.searchParams.get("max");
     const sort = req.nextUrl.searchParams.get("sort") || undefined;
@@ -22,6 +25,13 @@ export async function GET(req: NextRequest) {
       return Response.json(
         { error: "Missing query" },
         { status: 400 }
+      );
+    }
+
+    if (query.length > MAX_QUERY_LENGTH){
+      return Response.json(
+        {error: `Query must be ${MAX_QUERY_LENGTH} characters or fewer.`},
+        {status: 400}
       );
     }
 

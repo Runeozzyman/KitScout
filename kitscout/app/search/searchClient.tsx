@@ -48,7 +48,13 @@ export default function SearchClient() {
       const res = await fetch(`/api/search?${params.toString()}`);
 
       if (!res.ok) {
-        throw new Error("Failed to fetch");
+        const body = await res.json().catch(() => null);
+        const message =
+          body && typeof body.error === "string"
+            ? body.error
+            : "Search failed";
+      
+        throw new Error(message);
       }
 
       return res.json();
@@ -102,7 +108,7 @@ export default function SearchClient() {
           </div>
         )}
 
-        {error && <div>Something went wrong</div>}
+        {error && <div>{error.message}</div>}
 
         {!isLoading && results.length > 0 && (
           <>
@@ -122,7 +128,7 @@ export default function SearchClient() {
           </>
         )}
 
-        {!isLoading && results.length === 0 && (
+        {!isLoading && !error && results.length === 0 && (
           <div>No results found</div>
         )}
       </div>
