@@ -1,161 +1,231 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { GRADE_OPTIONS, GunplaGrade } from "@/types/grades";
+
+const FILTER_GRADES: GunplaGrade[] = [
+  "HG",
+  "RG",
+  "MG",
+  "PG",
+  "SD",
+  "EG",
+  "FM",
+  "MGSD",
+  "RE/100",
+].filter((grade): grade is GunplaGrade =>
+  (GRADE_OPTIONS as readonly string[]).includes(grade)
+);
+
+const SORT_OPTIONS = [
+  { value: "", short: "Match", label: "Relevance" },
+  { value: "asc", short: "$ ↑", label: "Low to high" },
+  { value: "desc", short: "$ ↓", label: "High to low" },
+] as const;
 
 type FilterProps = {
   query?: string;
-  min?: string;
-  max?: string;
-  sort?: string;
-  type?: string;
-  grades?: string;
+  min: string;
+  max: string;
+  sort: string;
+  grades: GunplaGrade[];
+  onMinChange: (value: string) => void;
+  onMaxChange: (value: string) => void;
+  onSortChange: (value: string) => void;
+  onToggleGrade: (grade: GunplaGrade) => void;
+  onClear: () => void;
 };
-
-const GRADE_OPTIONS = ["HG", "RG", "MG", "PG", "SD", "EG", "FM", "MGSD"];
 
 export default function SearchFilter({
   query = "",
-  min = "",
-  max = "",
-  sort = "",
-  type = "",
-  grades = "",
+  min,
+  max,
+  sort,
+  grades,
+  onMinChange,
+  onMaxChange,
+  onSortChange,
+  onToggleGrade,
+  onClear,
 }: FilterProps) {
   const router = useRouter();
-
   const [searchInput, setSearchInput] = useState(query);
-  const [minPrice, setMinPrice] = useState(min);
-  const [maxPrice, setMaxPrice] = useState(max);
-  const [sortState, setSortState] = useState(sort);
-  const [searchType, setSearchType] = useState(type);
-
-  const [selectedGrades, setSelectedGrades] = useState<string[]>(
-    grades ? grades.split(",") : []
-  );
-
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     setSearchInput(query);
-    setMinPrice(min);
-    setMaxPrice(max);
-    setSortState(sort);
-    setSearchType(type);
-    setSelectedGrades(grades ? grades.split(",") : []);
-  }, [query, min, max, sort, type, grades]);
+  }, [query]);
 
-  const toggleGrade = (grade: string) => {
-    setSelectedGrades((prev) =>
-      prev.includes(grade)
-        ? prev.filter((g) => g !== grade)
-        : [...prev, grade]
-    );
-  };
+  const activeCount =
+    (min ? 1 : 0) + (max ? 1 : 0) + (sort ? 1 : 0) + grades.length;
+  const minHigherThanMax =
+    min !== "" && max !== "" && Number(min) > Number(max);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-
-        const params = new URLSearchParams({
-          q: searchInput,
-          ...(searchType && { type: searchType }),
-          ...(minPrice && { min: minPrice }),
-          ...(maxPrice && { max: maxPrice }),
-          ...(sortState && { sort: sortState }),
-          ...(selectedGrades.length && {
-            grades: selectedGrades.join(","),
-          }),
-        });
-
-        router.push(`/search?${params.toString()}`);
-      }}
-      className="max-w-5xl mx-auto flex flex-col gap-4 p-4"
-    >
-
-      <div className="flex flex-col sm:flex-row gap-2">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 p-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const nextQuery = searchInput.trim();
+          if (!nextQuery) return;
+          router.push(`/search?q=${encodeURIComponent(nextQuery)}`);
+        }}
+        className="flex flex-col gap-2 sm:flex-row"
+      >
         <input
           type="text"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
           placeholder="Search for a kit..."
-          className="border border-gray-300 rounded-lg p-2 w-full sm:flex-1 bg-white"
+          className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:flex-1"
         />
 
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full sm:w-auto">
+        <button className="rounded-xl bg-blue-500 px-5 py-2.5 font-medium text-white shadow-sm transition hover:bg-blue-600 sm:w-auto">
           Search
         </button>
-      </div>
+      </form>
 
-      <button
-        type="button"
-        onClick={() => setFiltersOpen((prev) => !prev)}
-        className="w-full flex items-center justify-center gap-2 py-2 border-t border-b border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition hover:cursor-pointer"
-      >
-        <span>Filters</span>
-
-        <span
-          className={`transition-transform duration-200 ${
-            filtersOpen ? "rotate-180" : ""
-          }`}
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <button
+          type="button"
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen((open) => !open)}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-gray-50"
         >
-          ↓
-        </span>
-      </button>
+          <span className="flex items-center gap-2 font-medium text-gray-800">
+            <SlidersHorizontal className="h-4 w-4 text-blue-500" />
+            Filters
+            {activeCount > 0 && (
+              <span className="rounded-full bg-blue-500 px-2 py-0.5 text-xs font-semibold text-white">
+                {activeCount}
+              </span>
+            )}
+          </span>
+          <ChevronDown
+            className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+              filtersOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
 
-      {filtersOpen && (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="number"
-              placeholder="Min $"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
-            />
+        {filtersOpen && (
+          <div className="flex flex-col gap-5 border-t border-gray-100 px-4 py-4">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr_minmax(240px,0.9fr)]">
+              <PriceField
+                label="Minimum"
+                value={min}
+                placeholder="0"
+                onChange={onMinChange}
+              />
+              <PriceField
+                label="Maximum"
+                value={max}
+                placeholder="Any"
+                onChange={onMaxChange}
+              />
 
-            <input
-              type="number"
-              placeholder="Max $"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
-            />
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-medium text-gray-700">Sort</span>
+                <div className="grid grid-cols-3 gap-1 rounded-xl bg-gray-100 p-1">
+                  {SORT_OPTIONS.map((option) => {
+                    const selected = sort === option.value;
 
-            <select
-              value={sortState}
-              onChange={(e) => setSortState(e.target.value)}
-              className="border border-gray-300 rounded-lg p-2 w-full bg-white"
-            >
-              <option value="">Sort By</option>
-              <option value="asc">Price Asc.</option>
-              <option value="desc">Price Desc.</option>
-            </select>
-          </div>
+                    return (
+                      <button
+                        key={option.label}
+                        type="button"
+                        onClick={() => onSortChange(option.value)}
+                        className={`rounded-lg px-1.5 py-2 text-xs font-medium transition sm:text-sm ${
+                          selected
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                        }`}
+                      >
+                        <span className="sm:hidden">{option.short}</span>
+                        <span className="hidden sm:inline">{option.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
 
-          <div className="flex flex-wrap gap-2">
-            {GRADE_OPTIONS.map((grade) => {
-              const selected = selectedGrades.includes(grade);
+            <div>
+              <p className="mb-2 text-sm font-medium text-gray-700">Grade</p>
+              <div className="flex flex-wrap gap-2">
+                {FILTER_GRADES.map((grade) => {
+                  const selected = grades.includes(grade);
 
-              return (
+                  return (
+                    <button
+                      key={grade}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => onToggleGrade(grade)}
+                      className={`min-h-10 rounded-full border px-3.5 py-2 text-sm font-medium transition ${
+                        selected
+                          ? "border-blue-500 bg-blue-500 text-white shadow-sm"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50"
+                      }`}
+                    >
+                      {grade}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-gray-500">
+                {minHigherThanMax
+                  ? "Minimum is higher than maximum."
+                  : "Prices shown in CAD."}
+              </p>
+              {activeCount > 0 && (
                 <button
-                  key={grade}
                   type="button"
-                  onClick={() => toggleGrade(grade)}
-                  className={`px-3 py-1 rounded-full border text-sm transition ${
-                    selected
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white border-gray-300 hover:border-gray-400"
-                  }`}
+                  onClick={onClear}
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
                 >
-                  {selected ? `✓ ${grade}` : grade}
+                  Clear filters
                 </button>
-              );
-            })}
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PriceField({
+  label,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="flex items-center rounded-xl border border-gray-200 bg-gray-50 focus-within:border-blue-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-100">
+        <span className="pl-3 text-gray-400">$</span>
+        <input
+          type="number"
+          inputMode="decimal"
+          min={0}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent px-2 py-2.5 outline-none"
+        />
+      </span>
+    </label>
   );
 }

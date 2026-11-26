@@ -1,7 +1,6 @@
 import { redis } from "@/lib/redis/redis";
 import { KitResult } from "@/types/kit";
 import { KitResultWithCAD } from "@/types/kitWithCAD";
-import { GunplaGrade } from "@/types/grades";
 
 import { scrapeFuwa } from "./fuwa";
 import { scrapePanda } from "./panda";
@@ -20,15 +19,11 @@ function normalizeQuery(query: string) {
 }
 
 export async function gundamSearch(
-  query: string,
-  min?: number,
-  max?: number,
-  sort?: string,
-  grades?: GunplaGrade[]
+  query: string
 ): Promise<KitResultWithCAD[]> {
   console.log("SEARCHING GUNPLA");
 
-  const cacheKey = `search:${normalizeQuery(query)}:${min || ""}:${max || ""}:${sort || ""}:${grades?.join(",") || ""}`;
+  const cacheKey = `search:${normalizeQuery(query)}`;
 
   const cached = await redis.get<KitResultWithCAD[]>(cacheKey);
 
@@ -71,7 +66,6 @@ export async function gundamSearch(
 
   const rates = Object.fromEntries(rateEntries) as Record<string, number>;
 
-  // normalize all results to include CAD
   const normalized: KitResultWithCAD[] = ranked.map((item) => ({
     ...item,
     priceCAD: Number(
@@ -79,35 +73,7 @@ export async function gundamSearch(
     ),
   }));
 
-  // optional filters
-  let filtered = normalized;
+  await redis.set(cacheKey, normalized, { ex: 900 });
 
-  // price min
-  if (min !== undefined) {
-    filtered = filtered.filter((item) => item.priceCAD >= min);
-  }
-
-  // price max
-  if (max !== undefined) {
-    filtered = filtered.filter((item) => item.priceCAD <= max);
-  }
-
-  // grade filters
-  if (grades && grades.length > 0) {
-    filtered = filtered.filter(
-      (item) =>
-        item.grade && grades.includes(item.grade)
-    );
-  }
-
-  // sorting
-  if (sort === "asc") {
-    filtered.sort((a, b) => a.priceCAD - b.priceCAD);
-  } else if (sort === "desc") {
-    filtered.sort((a, b) => b.priceCAD - a.priceCAD);
-  }
-
-  await redis.set(cacheKey, filtered, { ex: 900 });
-
-  return filtered;
+  return normalized;
 }

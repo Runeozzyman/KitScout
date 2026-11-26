@@ -1,10 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth/authProvider";
 import { fetchWishlistedIDs } from "@/lib/supabase/wishlist";
+import { GunplaGrade } from "@/types/grades";
+import { KitResultWithCAD } from "@/types/kitWithCAD";
+import { filterResults, isGrade } from "@/utils/filterResults";
 
 import SkeletonResult from "../../components/skeletonResults";
 import Header from "../../components/header";
@@ -15,17 +18,29 @@ import Pagination from "@/components/pagination";
 
 export default function SearchClient() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { user } = useAuth();
 
   const query = searchParams.get("q") || "";
-  const type = searchParams.get("type") || "Gundams";
-  const min = searchParams.get("min") || "";
-  const max = searchParams.get("max") || "";
-  const sort = searchParams.get("sort") || "";
-  const grades = searchParams.get("grades") || "";
 
+  const [trackedQuery, setTrackedQuery] = useState(query);
+  const [min, setMin] = useState(searchParams.get("min") || "");
+  const [max, setMax] = useState(searchParams.get("max") || "");
+  const [sort, setSort] = useState(searchParams.get("sort") || "");
+  const [grades, setGrades] = useState<GunplaGrade[]>(() =>
+    parseGrades(searchParams.get("grades"))
+  );
   const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 15;
+
+  if (query !== trackedQuery) {
+    setTrackedQuery(query);
+    setMin("");
+    setMax("");
+    setSort("");
+    setGrades([]);
+    setPage(1);
+  }
 
   const { data: wishlist, isLoading: isWishlistLoading } = useQuery({
     queryKey: ["wishlist", user?.id],
@@ -34,17 +49,9 @@ export default function SearchClient() {
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["search", query, type, min, max, sort, grades],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        q: query,
-        type,
-        ...(min && { min }),
-        ...(max && { max }),
-        ...(sort && { sort }),
-        ...(grades && { grades }),
-      });
-
+    queryKey: ["search", query],
+    queryFn: async (): Promise<KitResultWithCAD[]> => {
+      const params = new URLSearchParams({ q: query });
       const res = await fetch(`/api/search?${params.toString()}`);
 
       if (!res.ok) {
@@ -53,7 +60,7 @@ export default function SearchClient() {
           body && typeof body.error === "string"
             ? body.error
             : "Search failed";
-      
+
         throw new Error(message);
       }
 
@@ -68,20 +75,63 @@ export default function SearchClient() {
     wishlist?.map((w) => String(w.kit_id)) ?? []
   );
 
-  const results = data || [];
+  const results = useMemo(
+    () => (Array.isArray(data) ? data : []),
+    [data]
+  );
+  const filteredResults = useMemo(
+    () => filterResults(results, { min, max, sort, grades }),
+    [results, min, max, sort, grades]
+  );
 
   const start = (page - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
-  const paginatedResults = results.slice(start, end);
+  const paginatedResults = filteredResults.slice(start, end);
+  const filtersActive =
+    min !== "" || max !== "" || sort !== "" || grades.length > 0;
 
-  // reset pagination when filters change
-  const filterKey = `${query}|${type}|${min}|${max}|${sort}|${grades}`;
-    useEffect(() => {
-      setPage(1);
-    }, [filterKey]);
+  useEffect(() => {
+    setPage(1);
+  }, [min, max, sort, grades]);
+
+  useEffect(() => {
+    const currentGrades = searchParams.get("grades") || "";
+    const sameQuery =
+      (searchParams.get("q") || "") === query &&
+      (searchParams.get("min") || "") === min &&
+      (searchParams.get("max") || "") === max &&
+      (searchParams.get("sort") || "") === sort &&
+      currentGrades === grades.join(",");
+
+    if (sameQuery) return;
+
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (min) params.set("min", min);
+    if (max) params.set("max", max);
+    if (sort) params.set("sort", sort);
+    if (grades.length) params.set("grades", grades.join(","));
+
+    router.replace(`/search?${params.toString()}`, { scroll: false });
+  }, [query, min, max, sort, grades, router, searchParams]);
+
+  const toggleGrade = (grade: GunplaGrade) => {
+    setGrades((current) =>
+      current.includes(grade)
+        ? current.filter((item) => item !== grade)
+        : [...current, grade]
+    );
+  };
+
+  const clearFilters = () => {
+    setMin("");
+    setMax("");
+    setSort("");
+    setGrades([]);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white text-gray-900">
       <Header />
 
       <div className="w-full border-b bg-gray-50">
@@ -90,15 +140,26 @@ export default function SearchClient() {
           min={min}
           max={max}
           sort={sort}
-          type={type}
           grades={grades}
+          onMinChange={setMin}
+          onMaxChange={setMax}
+          onSortChange={setSort}
+          onToggleGrade={toggleGrade}
+          onClear={clearFilters}
         />
       </div>
 
       <div className="flex flex-col items-center px-4 py-6 w-full">
-        <h1 className="text-xl sm:text-2xl font-bold mb-4">
+        <h1 className="text-xl sm:text-2xl font-bold mb-1 text-center">
           Results for: {query}
         </h1>
+        {!isLoading && !error && results.length > 0 && (
+          <p className="mb-4 text-sm text-gray-500">
+            {filtersActive
+              ? `Showing ${filteredResults.length} of ${results.length}`
+              : `${results.length} kits`}
+          </p>
+        )}
 
         {isLoading && (
           <div className="w-full max-w-5xl grid gap-4">
@@ -110,7 +171,7 @@ export default function SearchClient() {
 
         {error && <div>{error.message}</div>}
 
-        {!isLoading && results.length > 0 && (
+        {!isLoading && filteredResults.length > 0 && (
           <>
             <ResultList
               data={paginatedResults}
@@ -121,7 +182,7 @@ export default function SearchClient() {
 
             <Pagination
               page={page}
-              totalItems={results.length}
+              totalItems={filteredResults.length}
               itemsPerPage={ITEMS_PER_PAGE}
               onPageChange={setPage}
             />
@@ -131,9 +192,28 @@ export default function SearchClient() {
         {!isLoading && !error && results.length === 0 && (
           <div>No results found</div>
         )}
+
+        {!isLoading && !error && results.length > 0 && filteredResults.length === 0 && (
+          <div className="text-center">
+            <p>No kits match these filters.</p>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-700"
+            >
+              Clear filters
+            </button>
+          </div>
+        )}
       </div>
 
       <FindNearbyStores />
     </div>
   );
+}
+
+function parseGrades(value: string | null): GunplaGrade[] {
+  if (!value) return [];
+
+  return value.split(",").filter(isGrade);
 }
